@@ -151,7 +151,64 @@
     </div>
 
     <script>
-        // --- Game Data ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Assign element variables
+            worldsContainer = document.getElementById('worlds');
+            worldSelectScreen = document.getElementById('world-select-screen');
+            missionSelectScreen = document.getElementById('mission-select-screen');
+            challengeScreen = document.getElementById('challenge-screen');
+            worldTitleEl = document.getElementById('world-title');
+            missionListEl = document.getElementById('mission-list');
+            challengeTitleEl = document.getElementById('challenge-title');
+            questionEl = document.getElementById('question');
+            optionsEl = document.getElementById('options');
+            feedbackEl = document.getElementById('feedback');
+            nextBtn = document.getElementById('next-btn');
+            bgMusicEl = document.getElementById('bg-music');
+            toggleMusicBtn = document.getElementById('toggle-music-btn');
+            musicIconOn = document.getElementById('music-icon-on');
+            musicIconOff = document.getElementById('music-icon-off');
+            musicBtnText = document.getElementById('music-btn-text');
+
+            // Ensure gameData is defined
+            if (!gameData || !gameData.worlds) {
+                console.error('gameData or worlds data is missing.');
+                return;
+            }
+
+            // Render worlds
+            renderWorlds();
+
+            // Initialize music settings
+            bgMusicEl.volume = player.settings.musicVolume;
+            if (!player.musicOn) {
+                bgMusicEl.pause();
+                musicIconOn.classList.add('hidden');
+                musicIconOff.classList.remove('hidden');
+                musicBtnText.textContent = 'Off';
+            }
+        });
+
+        function renderWorlds() {
+            worldsContainer.innerHTML = ''; // Clear existing content
+            Object.keys(gameData.worlds).forEach(worldKey => {
+                const world = gameData.worlds[worldKey];
+                const isUnlocked = !world.unlocksAfter || player.progress[world.unlocksAfter];
+                const worldDiv = document.createElement('div');
+                worldDiv.className = `p-4 rounded-lg shadow-lg border ${isUnlocked ? 'bg-gray-700 hover:bg-gray-600 cursor-pointer' : 'bg-gray-800 opacity-50 cursor-not-allowed'}`;
+                worldDiv.innerHTML = `
+                    <div class="text-center">
+                        <div class="text-4xl">${world.icon}</div>
+                        <h3 class="text-lg font-semibold text-blue-300">${world.name}</h3>
+                    </div>
+                `;
+                if (isUnlocked) {
+                    worldDiv.onclick = () => selectWorld(worldKey);
+                }
+                worldsContainer.appendChild(worldDiv);
+            });
+        }
+
         const gameData = {
             worlds: {
                 gaiaSector: {
@@ -159,23 +216,7 @@
                     icon: "🌿",
                     order: 1,
                     missions: [
-                        {
-                            id: "heartlessTitan",
-                            name: "Heartless Titan",
-                            boss: true,
-                            hp: 100,
-                            playerBaseFocus: 3,
-                            questions: [
-                                {
-                                    easy: { q: "What is the primary function of the heart?", o: ["Pump blood", "Digest food", "Filter toxins"], a: "Pump blood", damage: 30 },
-                                    medium: { q: "Which chamber of the heart pumps oxygenated blood to the body?", o: ["Left ventricle", "Right atrium", "Left atrium"], a: "Left ventricle", damage: 40 },
-                                    hard: { q: "What is the average resting heart rate for adults?", o: ["60-100 bpm", "40-60 bpm", "100-120 bpm"], a: "60-100 bpm", damage: 50 }
-                                }
-                            ],
-                            rewards: { currency: 50, items: { focusVial: 1 } },
-                            xp: 100,
-                            svgPath: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"
-                        }
+                        { id: "heartlessTitan", name: "Heartless Titan", boss: true }
                     ]
                 },
                 neoKyoto: {
@@ -184,23 +225,7 @@
                     order: 2,
                     unlocksAfter: "gaiaSector",
                     missions: [
-                        {
-                            id: "logicCore",
-                            name: "Logic Core",
-                            boss: true,
-                            hp: 120,
-                            playerBaseFocus: 3,
-                            questions: [
-                                {
-                                    easy: { q: "What is the basic unit of the brain?", o: ["Neuron", "Cell", "Axon"], a: "Neuron", damage: 30 },
-                                    medium: { q: "Which part of the brain controls memory?", o: ["Hippocampus", "Cerebellum", "Medulla"], a: "Hippocampus", damage: 40 },
-                                    hard: { q: "What is the approximate number of neurons in the human brain?", o: ["86 billion", "100 million", "1 trillion"], a: "86 billion", damage: 50 }
-                                }
-                            ],
-                            rewards: { currency: 60, items: { focusVial: 1 } },
-                            xp: 120,
-                            svgPath: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"
-                        }
+                        { id: "logicCore", name: "Logic Core", boss: true }
                     ]
                 },
                 chronoLabs: {
@@ -209,127 +234,36 @@
                     order: 3,
                     unlocksAfter: "neoKyoto",
                     missions: [
-                        {
-                            id: "temporalAnomaly",
-                            name: "Temporal Anomaly",
-                            boss: true,
-                            hp: 140,
-                            playerBaseFocus: 3,
-                            questions: [
-                                {
-                                    easy: { q: "What is the half-life of a drug?", o: ["Time to reduce by half", "Time to double", "Time to metabolize"], a: "Time to reduce by half", damage: 30 },
-                                    medium: { q: "Which phase of drug metabolism involves oxidation?", o: ["Phase I", "Phase II", "Phase III"], a: "Phase I", damage: 40 },
-                                    hard: { q: "What is the primary organ for drug metabolism?", o: ["Liver", "Kidney", "Heart"], a: "Liver", damage: 50 }
-                                }
-                            ],
-                            rewards: { currency: 70, items: { focusVial: 1 } },
-                            xp: 140,
-                            svgPath: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"
-                        }
+                        { id: "temporalAnomaly", name: "Temporal Anomaly", boss: true }
                     ]
                 }
-            },
-            items: {
-                focusVial: {
-                    name: "Focus Vial",
-                    description: "Restores 1 focus point during boss battles.",
-                    icon: "💉",
-                    price: 50
-                }
             }
         };
 
-        // --- Story Embedding ---
-        const storyNarrative = {
-            intro: "The Odyssey System. More than a simulation, it's the digitized soul of medicine, an archive of every discovery, every cure, every life saved. But it's ailing. A parasitic Anomaly spreads through its core logic, twisting knowledge into nightmare. The System requires a Healer not just of data, but perhaps of its very digital spirit. That Healer is you. Driven by a need for answers—perhaps for a cure the physical world couldn't provide, a solution only whispered of in the Odyssey's deepest archives—you interface, ready for your trial.",
-            worlds: {
-                gaiaSector: "The usually vibrant Gaia Sector, heart of biological simulation, feels wrong. Rivers of simulated blood flow erratically, cellular models pulse with unnatural rhythms. The Anomaly's touch is a fever here. You push through, correcting corrupted simulations with your knowledge, proving your understanding of life's fundamental engine. The Heartless Titan, a grotesque mockery of cardiac function, guards the sector core. Its defeat feels less like a victory, more like a temporary reprieve. Amidst the stabilizing data streams, you find a fragmented log: '...stress levels exceeding parameters... isolation protocols engaged... unexpected... resonance...' The Archivist adds, 'Anomaly signature detected. Non-standard data patterns. Proceed to Neo-Kyoto.'",
-                neoKyoto: "Neo-Kyoto, usually a realm of pure logic and neural clarity, is now a disorienting maze. Synaptic pathways fire randomly, simulated memories flicker with impossible images. The Anomaly attacks thought itself. You navigate tests of neurology, untangling corrupted pathways. The Logic Core, once the pinnacle of diagnostic reasoning, now poses contradictory, nonsensical challenges. Overcoming it feels like calming a frantic mind. Another data fragment surfaces: '...evolutionary subroutines diverging... self-correction failing... temporal echoes detected...' The Archivist's voice holds a new edge of concern. 'The corruption learns. It adapts. The temporal signature is confirmed. Accessing Chrono Labs.'",
-                chronoLabs: "Time feels fluid, wrong, in the Chrono Labs. Simulations of aging accelerate and reverse unnaturally. The Anomaly's influence here is a distortion of time itself. You face challenges that test your understanding of pharmacokinetics and temporal anomalies. The Temporal Anomaly boss is a chaotic manifestation of time's unpredictability. Defeating it feels like stabilizing a whirlwind. A final data fragment emerges: '...temporal stabilization achieved... anomaly integration possible... system evolution imminent...' The Archivist's tone is resolute. 'The final phase awaits. Prepare for the Sentinel.'"
-            },
-            outro: "The Odyssey System breathes again, vibrant and whole, its knowledge base enhanced by the integration of the Sentinel's unique evolution. The Archivist speaks, 'System integrity restored. Anomaly integrated. Healer, your unique approach, your... compassion... was key. The knowledge you sought, perhaps even the cure that drove you here, may now be within reach as the System unlocks previously inaccessible archives. You have not just saved the Odyssey; you have helped it evolve.' As a Master Healer, your journey continues, now not just as a student or restorer, but as a guardian and explorer on the ever-expanding frontier of medicine."
+        const player = {
+            progress: {
+                gaiaSector: true // Unlock the first world for testing
+            }
         };
 
-        function displayStory(section, worldKey) {
-            const storyContainer = document.getElementById('story-container');
-            if (section === 'intro') {
-                storyContainer.innerText = storyNarrative.intro;
-            } else if (section === 'world' && worldKey) {
-                storyContainer.innerText = storyNarrative.worlds[worldKey];
-            } else if (section === 'outro') {
-                storyContainer.innerText = storyNarrative.outro;
-            }
-            storyContainer.classList.remove('hidden');
+        function selectWorld(worldKey) {
+            const world = gameData.worlds[worldKey];
+            worldTitleEl.textContent = world.name;
+            missionListEl.innerHTML = ''; // Clear existing missions
+            world.missions.forEach(mission => {
+                const missionDiv = document.createElement('div');
+                missionDiv.className = 'p-3 rounded-lg shadow border bg-gray-700 hover:bg-gray-600 cursor-pointer';
+                missionDiv.textContent = mission.name;
+                missionDiv.onclick = () => startMission(worldKey, mission.id);
+                missionListEl.appendChild(missionDiv);
+            });
+            worldSelectScreen.classList.add('hidden');
+            missionSelectScreen.classList.remove('hidden');
         }
 
-        // --- Sound Synthesis Setup ---
-        const clickSynth = new Tone.Synth().toDestination();
-        const correctSynth = new Tone.Synth({ oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.1, sustain: 0.1, release: 0.2 } }).toDestination();
-        const incorrectSynth = new Tone.Synth({ oscillator: { type: 'sawtooth' }, envelope: { attack: 0.02, decay: 0.4, sustain: 0, release: 0.1 } }).toDestination();
-        const levelUpSynth = new Tone.Sequence((time, note) => { correctSynth.triggerAttackRelease(note, "16n", time); }, ["C4", "E4", "G4", "C5", "G5"], "16n").start(0);
-        levelUpSynth.loop = false;
-        const bossHitSynth = new Tone.Synth({ oscillator: { type: 'square' }, volume: -6, envelope: { attack: 0.01, decay: 0.2, sustain: 0, release: 0.1 } }).toDestination();
-        const playerHitSynth = new Tone.Synth({ oscillator: { type: 'fmsquare' }, volume: -3, modulationIndex: 5, envelope: { attack: 0.05, decay: 0.3, sustain: 0, release: 0.1 } }).toDestination();
-        const defeatSynth = new Tone.Synth({ oscillator: { type: 'pwm', modulationFrequency: 0.5 }, volume: -3, envelope: { attack: 0.1, decay: 1.0, sustain: 0, release: 0.2 } }).toDestination();
-        const achievementSynth = new Tone.Synth({ oscillator: { type: 'triangle' }, volume: -4, envelope: { attack: 0.01, decay: 0.2, sustain: 0.3, release: 0.3 } }).toDestination();
-        const itemUseSynth = new Tone.Synth({ oscillator: { type: 'pulse', width: 0.3 }, volume: -5, envelope: { attack: 0.01, decay: 0.1, sustain: 0.1, release: 0.1 } }).toDestination();
-        const perkUnlockSynth = new Tone.Synth({ oscillator: { type: 'triangle8' }, volume: -4, envelope: { attack: 0.02, decay: 0.3, sustain: 0.2, release: 0.3 } }).toDestination();
-        const timerTickSynth = new Tone.Synth({ oscillator: { type: 'sine' }, volume: -15, envelope: { attack: 0.005, decay: 0.05, sustain: 0, release: 0.05 } }).toDestination(); // Timer tick sound
-        const timerEndSynth = new Tone.Synth({ oscillator: { type: 'square' }, volume: -8, envelope: { attack: 0.01, decay: 0.5, sustain: 0, release: 0.1 } }).toDestination(); // Timer end sound
-        const buyItemSynth = new Tone.Synth({ oscillator: { type: 'sine' }, volume: -8, envelope: { attack: 0.01, decay: 0.1, sustain: 0.1, release: 0.1 } }).toDestination(); // Buy sound
-
-
-        // --- Master Volume Control ---
-        const sfxDestination = Tone.Destination;
-
-        // --- PlaySound Function ---
-        const playSound = (type) => {
-            Tone.start().then(() => {
-                try {
-                    if (type === 'click') clickSynth.triggerAttackRelease("F5", "32n");
-                    else if (type === 'correct') correctSynth.triggerAttackRelease("C5", "16n");
-                    else if (type === 'incorrect') incorrectSynth.triggerAttackRelease("G2", "8n");
-                    else if (type === 'levelUp') levelUpSynth.start(Tone.now());
-                    else if (type === 'bossHit') bossHitSynth.triggerAttackRelease("A2", "8n", Tone.now() + 0.05);
-                    else if (type === 'playerHit') playerHitSynth.triggerAttackRelease("E2", "4n");
-                    else if (type === 'defeat') defeatSynth.triggerAttackRelease("C2", "2n");
-                    else if (type === 'achievement') achievementSynth.triggerAttackRelease("A4", "8n");
-                    else if (type === 'itemUse') itemUseSynth.triggerAttackRelease("G4", "16n");
-                    else if (type === 'perkUnlock') { perkUnlockSynth.triggerAttackRelease("C4", "8n", Tone.now() + 0.05); perkUnlockSynth.triggerAttackRelease("G4", "8n", Tone.now() + 0.2); }
-                    else if (type === 'timerTick') timerTickSynth.triggerAttackRelease("A5", "32n");
-                    else if (type === 'timerEnd') timerEndSynth.triggerAttackRelease("D3", "4n");
-                    else if (type === 'buyItem') buyItemSynth.triggerAttackRelease("E5", "16n");
-                } catch (error) { console.error(`Tone.js error playing '${type}':`, error); }
-            }).catch(error => { console.error("Failed to start Tone.js audio context:", error); });
-        };
-
-
-        // --- Game State & Data ---
-        const SAVE_KEY = "healers_odyssey_save_v7"; // Incremented save key
-        let player = JSON.parse(localStorage.getItem(SAVE_KEY)) || {
-            level: 1, xp: 0, streak: 0, progress: {}, musicOn: true,
-            unlockedAchievements: [], skillPoints: 0, unlockedPerks: [],
-            inventory: { focusVial: 1, hintToken: 1 }, // Start with 1 of each for testing
-            settings: { musicVolume: 0.5, sfxVolume: 0.8, difficulty: 'normal' }, // Added difficulty setting
-            stats: { missionsCompleted: 0, bossesDefeated: 0, totalCorrect: 0, totalIncorrect: 0, itemsUsed: 0, vialsUsed: 0, hintsUsed: 0, highestStreak: 0, perfectBossWins: 0, timedWins: 0, itemsBought: 0 }, // Added itemsBought
-            currency: 100 // Start with some currency for testing shop
-        };
-        const xpPerLevel = lvl => Math.floor(100 * Math.pow(1.25, lvl - 1));
-        const saveGame = () => localStorage.setItem(SAVE_KEY, JSON.stringify(player));
-
-        // --- Global Variables ---
-        let levelEl, xpEl, nextXpEl, streakEl, xpBarFillEl, worldsContainer,
-            worldSelectScreen, missionSelectScreen, challengeScreen, worldTitleEl,
-            missionListEl, challengeTitleEl, questionEl, optionsEl, feedbackEl,
-            nextBtn, bgMusicEl, toggleMusicBtn, musicIconOn, musicIconOff, musicBtnText,
-            achievementToastEl, achievementsModalEl, achievementsListEl, perksModalEl,
-            perksListEl, skillPointsDisplayEl, settingsModalEl, musicVolumeSlider, sfxVolumeSlider,
-            statsModalEl, statsListEl, shopModalEl, shopItemsListEl, shopCurrencyDisplayEl, // Added Shop elements
-            summaryModalEl, summaryTitleEl, summaryDetailsEl, // Added Summary elements
-            bossBattleUI, bossNameEl, bossHpFillEl, bossHpTextEl, bossStatusEl, bossVisualEl,
-            playerFocusFillEl, playerFocusTextEl, itemsUiEl, skillPointsStatEl, currencyStatEl, // Added currency stat display
-            timerDisplayEl, modifierDisplayEl, difficultyChoiceEl, difficultySettingsButtonsEl; // Added difficulty settings buttons
-
-        // --- Initial Game Load ---
-        document.addEventListener('DOMContentLoaded', () => {
-            // Assign element variables
+        function startMission(worldKey, missionId) {
+            // ...existing code for starting a mission...
+        }
+    </script>
+</body>
+</html>
