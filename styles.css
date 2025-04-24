@@ -1,0 +1,19 @@
+body {
+    background-color: #1a202c; /* bg-gray-900 */
+    color: #e2e8f0; /* text-gray-200 */
+    min-height: 100vh;
+    padding: 1rem;
+}
+
+@media (min-width: 768px) {
+    body {
+        padding: 2rem;
+    }
+}
+
+.container {
+    margin: 0 auto;
+    max-width: 48rem; /* max-w-3xl */
+}
+
+/* Add additional styles as needed */
