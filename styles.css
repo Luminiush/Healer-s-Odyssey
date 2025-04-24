@@ -1,6 +1,11 @@
 body {
-    background-color: #1a202c; /* bg-gray-900 */
-    color: #e2e8f0; /* text-gray-200 */
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #0f172a, #1e3a8a, #111827);
+    background-size: 400% 400%;
+    color: #e5e7eb;
+    overflow-x: hidden;
+    animation: gradientBG 15s ease infinite;
+    padding-bottom: 4rem;
     min-height: 100vh;
     padding: 1rem;
 }
@@ -14,6 +19,16 @@ body {
 .container {
     margin: 0 auto;
     max-width: 48rem; /* max-w-3xl */
+}
+
+h1, h2, h3 {
+    font-family: 'Orbitron', sans-serif;
+}
+
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
 
 /* Add additional styles as needed */
