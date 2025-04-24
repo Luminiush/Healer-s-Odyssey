@@ -10,6 +10,24 @@ let levelEl, xpEl, nextXpEl, streakEl, xpBarFillEl, worldsContainer,
     playerFocusFillEl, playerFocusTextEl, itemsUiEl, skillPointsStatEl, currencyStatEl, // Added currency stat display
     timerDisplayEl, modifierDisplayEl, difficultyChoiceEl, difficultySettingsButtonsEl; // Added difficulty settings buttons
 
+// --- Game Content (Restored Worlds and Missions) ---
+const gameData = {
+    gaia: {
+        name: "Gaia Sector 🌿",
+        icon: '🌿',
+        order: 1,
+        missions: [
+            { id: "g1", name: "The Heart's Warning", q: "Primary cause of acute myocardial infarction?", o: ["Coronary artery thrombosis", "Severe asthma attack", "Common cold complications", "Ischemic stroke"], a: "Coronary artery thrombosis", xp: 20 },
+            { id: "g2", name: "The Blood Code", q: "Essential vitamin for blood clotting?", o: ["Vitamin K", "Vitamin C", "Vitamin D", "Vitamin B12"], a: "Vitamin K", xp: 20, timeLimit: 20 },
+            { id: "g3", name: "First Response Protocol", q: "Initial test for acute chest pain in ER?", o: ["Electrocardiogram (ECG)", "MRI", "CT scan", "Echocardiogram"], a: "Electrocardiogram (ECG)", xp: 25 },
+            { id: "g_boss", name: "Heartless Titan", boss: true, hp: 100, playerBaseFocus: 3, rewards: { items: { focusVial: 1 }, currency: 50 }, svgPath: "M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z", questions: [
+                { easy: { q: "What does 'MI' stand for in STEMI?", o: ["Myocardial Infarction", "Multiple Injuries", "Medical Intervention"], a: "Myocardial Infarction", damage: 25, focusLoss: 1 }, medium: { q: "What does STEMI specifically indicate on an ECG?", o: ["ST segment elevation", "Presence of Q waves", "T wave inversion"], a: "ST segment elevation", damage: 35, focusLoss: 1 }, hard: { q: "Which coronary artery blockage typically causes an anterior STEMI?", o: ["Left Anterior Descending (LAD)", "Right Coronary Artery (RCA)", "Circumflex Artery"], a: "Left Anterior Descending (LAD)", damage: 50, focusLoss: 2 } }
+            ], xp: 100 }
+        ]
+    },
+    // ...other worlds like neuro and chrono...
+};
+
 // --- Initial Game Load ---
 document.addEventListener('DOMContentLoaded', () => {
     // Assign element variables
@@ -78,3 +96,40 @@ document.addEventListener('DOMContentLoaded', () => {
     showWorlds();
     loadSettings(); // Ensure initial difficulty buttons are styled correctly
 });
+
+// --- Display World Selection ---
+const showWorlds = () => {
+    if (!worldsContainer) return;
+    worldsContainer.innerHTML = '';
+    const worldEntries = Object.entries(gameData).filter(([id, data]) => data.order).sort(([,a], [,b]) => a.order - b.order);
+    worldEntries.forEach(([id, world]) => {
+        const unlocked = true; // Simplified for local testing
+        const worldCard = document.createElement('button');
+        worldCard.className = `p-5 rounded-lg shadow-md text-left transition duration-200 ease-in-out transform focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-60 flex items-center space-x-4 ${ unlocked ? 'bg-gray-700/70 hover:bg-gray-600/90 hover:scale-[1.03] cursor-pointer' : 'bg-gray-800/50 opacity-50 cursor-not-allowed' }`;
+        worldCard.innerHTML = `<span class="text-3xl">${world.icon || '🌐'}</span><div><strong class="text-lg ${unlocked ? 'text-blue-300' : 'text-gray-500'} block mb-0.5 font-title">${world.name}</strong><span class="text-sm ${unlocked ? 'text-gray-400' : 'text-gray-600'}">Explore ${world.missions.length} challenges</span></div>`;
+        if (unlocked) {
+            worldCard.onclick = () => {
+                selectWorld(id);
+            };
+        } else {
+            worldCard.disabled = true;
+        }
+        worldsContainer.appendChild(worldCard);
+    });
+};
+
+// --- Select World ---
+const selectWorld = (worldId) => {
+    if (!worldTitleEl || !missionListEl) return;
+    currentWorldId = worldId;
+    const world = gameData[worldId];
+    worldTitleEl.textContent = world.name;
+    missionListEl.innerHTML = '';
+    world.missions.forEach((mission) => {
+        const btn = document.createElement('button');
+        btn.textContent = mission.name;
+        btn.onclick = () => loadMission(mission);
+        missionListEl.appendChild(btn);
+    });
+    switchScreen('mission-select-screen');
+};
