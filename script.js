@@ -97,19 +97,24 @@ document.addEventListener('DOMContentLoaded', async () => {
 // --- Close Modal Function ---
 const closeModal = (modalId) => {
     const modal = document.getElementById(modalId);
-    if (modal) {
-        modal.classList.add('modal-hidden');
-        modal.classList.remove('modal-visible');
-    }
+    if (!modal) return;
+    playSound('click');
+    modal.classList.add('modal-hidden');
+    modal.classList.remove('modal-visible');
 };
 
 // --- Open Modal Function ---
 const openModal = (modalId) => {
     const modal = document.getElementById(modalId);
-    if (modal) {
-        modal.classList.add('modal-visible');
-        modal.classList.remove('modal-hidden');
-    }
+    if (!modal) return;
+    playSound('click');
+    if (modalId === 'achievements-modal') populateAchievementsModal();
+    if (modalId === 'perks-modal') populatePerksModal();
+    if (modalId === 'settings-modal') loadSettings();
+    if (modalId === 'stats-modal') populateStatsModal();
+    if (modalId === 'shop-modal') populateShopModal();
+    modal.classList.remove('modal-hidden');
+    modal.classList.add('modal-visible');
 };
 
 // --- Ensure Modal Clicks Don't Propagate ---
