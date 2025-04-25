@@ -94,6 +94,36 @@ document.addEventListener('DOMContentLoaded', async () => {
     loadSettings(); // Ensure initial difficulty buttons are styled correctly
 });
 
+// --- Close Modal Function ---
+const closeModal = (modalId) => {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.classList.add('modal-hidden');
+        modal.classList.remove('modal-visible');
+    }
+};
+
+// --- Open Modal Function ---
+const openModal = (modalId) => {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.classList.add('modal-visible');
+        modal.classList.remove('modal-hidden');
+    }
+};
+
+// --- Ensure Modal Clicks Don't Propagate ---
+document.addEventListener('click', (event) => {
+    const modalContent = event.target.closest('.modal-content');
+    if (!modalContent) {
+        const openModals = document.querySelectorAll('.modal-visible');
+        openModals.forEach((modal) => {
+            modal.classList.add('modal-hidden');
+            modal.classList.remove('modal-visible');
+        });
+    }
+});
+
 // --- Display World Selection ---
 const showWorlds = () => {
     if (!worldsContainer) return;
