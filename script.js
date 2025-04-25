@@ -92,6 +92,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     initializeMusic();
     checkLevelUp(); // Includes initial stats update
     loadSettings(); // Ensure initial difficulty buttons are styled correctly
+
+    // Call initialization functions
+    initializeModals();
+    populateAchievementsModal();
 });
 
 // --- Close Modal Function ---
@@ -128,6 +132,39 @@ document.addEventListener('click', (event) => {
         });
     }
 });
+
+// --- Ensure Modals Are Initialized ---
+const initializeModals = () => {
+    document.querySelectorAll('.modal').forEach(modal => {
+        modal.addEventListener('click', (event) => {
+            if (event.target === modal) {
+                closeModal(modal.id);
+            }
+        });
+    });
+};
+
+// --- Populate Achievements Modal ---
+const populateAchievementsModal = () => {
+    if (!achievementsListEl) return;
+    achievementsListEl.innerHTML = '';
+    const unlockedAchievements = player.unlockedAchievements || [];
+    const allAchievements = Object.entries(gameData.achievements || {});
+
+    if (unlockedAchievements.length === 0) {
+        achievementsListEl.innerHTML = '<p class="text-gray-400 italic">No achievements unlocked yet.</p>';
+    } else {
+        unlockedAchievements.forEach(id => {
+            const achievement = gameData.achievements[id];
+            if (achievement) {
+                const el = document.createElement('div');
+                el.className = 'bg-green-800/50 border border-green-600 p-3 rounded-lg flex items-center space-x-3';
+                el.innerHTML = `<svg class="icon w-6 h-6 text-green-400 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><div><p class="font-semibold text-green-300">${achievement.name}</p><p class="text-sm text-gray-300">${achievement.description}</p></div>`;
+                achievementsListEl.appendChild(el);
+            }
+        });
+    }
+};
 
 // --- Display World Selection ---
 const showWorlds = () => {
