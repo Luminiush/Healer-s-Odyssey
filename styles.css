@@ -1,34 +1,1057 @@
+/* ===== Core Variables ===== */
+:root {
+    --bg-color: #1a1a1a;
+    --text-color: #e0e0e0;
+    --primary-color: #f4c430; /* Retained Gold from Healer's */
+    --secondary-color: #a07d20; /* Darker Gold */
+    --accent-color: #d4af37; /* Brighter Gold */
+    --border-color: #444;
+    --sidebar-bg: #252525;
+    --header-bg: #2a2a2a;
+    --section-bg: #2f2f2f;
+    --button-bg: var(--primary-color);
+    --button-text: #1a1a1a; /* Dark text for gold button */
+    --button-hover-bg: var(--secondary-color);
+    --link-color: var(--accent-color);
+    --link-hover-color: var(--primary-color);
+    --success-color: #4CAF50;
+    --error-color: #f44336;
+    --warning-color: #ff9800;
+    --info-color: #2196F3;
+    --locked-color: #777;
+    --danger-color: var(--error-color);
+    --danger-hover-color: #c82333;
+    --placeholder-color: #666;
+    --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --font-header: 'Cinzel', serif; /* Retained Cinzel for headers */
+    --modal-bg: rgba(0, 0, 0, 0.7);
+    --modal-content-bg: #333;
+    --focus-outline-color: var(--primary-color);
+    --transition-speed: 0.3s;
+    --animation-speed-fast: 0.3s;
+    --animation-speed-medium: 0.5s;
+}
+
+body.light-mode {
+    --bg-color: #f4f4f4;
+    --text-color: #333;
+    --primary-color: #c79100; /* Darker Gold for light mode primary */
+    --secondary-color: #a07d20; /* Even Darker Gold */
+    --accent-color: #e0b84f; /* Lighter Gold accent */
+    --border-color: #ccc;
+    --sidebar-bg: #e9ecef;
+    --header-bg: #f8f9fa;
+    --section-bg: #ffffff;
+    --button-bg: var(--primary-color);
+    --button-text: #fff; /* White text for darker gold button */
+    --button-hover-bg: var(--secondary-color);
+    --link-color: var(--accent-color);
+    --link-hover-color: var(--primary-color);
+    --success-color: #28a745;
+    --error-color: #dc3545;
+    --warning-color: #ffc107; /* Adjusted for light bg */
+    --info-color: #17a2b8;
+    --locked-color: #aaa;
+    --danger-color: var(--error-color);
+    --danger-hover-color: #bd2130;
+    --placeholder-color: #aaa;
+    --modal-content-bg: #fefefe;
+    --focus-outline-color: var(--primary-color);
+}
+
+/* ===== Basic Reset & Font ===== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+html {
+    scroll-behavior: smooth;
+}
 body {
-    font-family: 'Inter', sans-serif;
-    background: linear-gradient(135deg, #0f172a, #1e3a8a, #111827);
-    background-size: 400% 400%;
-    color: #e5e7eb;
-    overflow-x: hidden;
-    animation: gradientBG 15s ease infinite;
-    padding-bottom: 4rem;
+    font-family: var(--font-main);
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    display: flex; /* For sidebar/main layout */
     min-height: 100vh;
-    padding: 1rem;
+    transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
 }
 
-@media (min-width: 768px) {
-    body {
-        padding: 2rem;
-    }
+/* ===== Utilities ===== */
+.hidden {
+    display: none !important;
+}
+.placeholder {
+    color: var(--placeholder-color);
+    font-style: italic;
+    text-align: center;
+    padding: 20px;
+}
+.danger-button {
+    background-color: var(--danger-color) !important; /* Overrides default button */
+    color: white !important;
+}
+.danger-button:hover:not(:disabled) {
+    background-color: var(--danger-hover-color) !important;
 }
 
-.container {
-    margin: 0 auto;
-    max-width: 48rem; /* max-w-3xl */
-}
-
+/* ===== Typography & Links ===== */
 h1, h2, h3 {
-    font-family: 'Orbitron', sans-serif;
+    font-family: var(--font-header);
+    color: var(--primary-color);
+    margin-bottom: 0.75em;
+}
+h2 { /* Styling for section headers */
+    margin-top: 1em; /* Space above */
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.3em;
+}
+h3 { /* Styling for subsection headers (like in sidebar) */
+    margin-top: 1em;
+    color: var(--accent-color);
+    font-size: 1.2em;
+}
+p {
+    margin-bottom: 0.75em;
+}
+a {
+    color: var(--link-color);
+    text-decoration: none;
+    transition: color var(--transition-speed) ease;
+    outline-offset: 2px; /* For focus */
+}
+a:hover {
+    color: var(--link-hover-color);
 }
 
-@keyframes gradientBG {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+/* Focus Styles (Improved Visibility) */
+a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible, details > summary:focus-visible {
+    outline: 2px solid var(--focus-outline-color);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px rgba(244, 196, 48, 0.3); /* Using primary color with alpha */
+    border-radius: 2px;
+}
+/* Remove default marker for details/summary */
+details > summary { list-style: none; }
+details > summary::-webkit-details-marker { display: none; }
+
+/* ===== Buttons, Inputs, Select ===== */
+button {
+    background-color: var(--button-bg);
+    color: var(--button-text);
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: var(--font-main); /* Consistent font */
+    font-weight: bold;
+    transition: background-color var(--transition-speed) ease, transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+    margin: 5px; /* Add some default margin */
+    display: inline-flex; /* Align icon/text */
+    align-items: center;
+    justify-content: center;
+    gap: 5px; /* Space between icon/text */
+    text-align: center;
+    line-height: 1.2;
+}
+button:hover:not(:disabled) {
+    background-color: var(--button-hover-bg);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+button:active:not(:disabled) {
+    transform: translateY(0px);
+    box-shadow: none;
+}
+button:disabled {
+    background-color: #555 !important; /* Ensure disabled style overrides */
+    color: #999 !important;
+    cursor: not-allowed;
+    opacity: 0.7;
+    transform: none; /* No hover effect */
+    box-shadow: none; /* No hover effect */
+}
+input[type="number"], textarea, select {
+    padding: 8px 10px;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-color); /* Match background */
+    color: var(--text-color);
+    margin: 5px;
+    transition: border-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+    font-family: var(--font-main);
+    font-size: 1em;
+}
+/* Custom Select Arrow - JS might be needed if --text-color isn't available on initial parse */
+select {
+    cursor: pointer;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    /* The SVG background image part might need JS to inject the color correctly on load/theme change */
+    /* For simplicity, using a basic fixed color arrow initially */
+     background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23e0e0e0%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 10px 10px;
+    padding-right: 30px; /* Space for arrow */
+}
+body.light-mode select {
+     background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23333333%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
+}
+/* Styling for the import/export textarea */
+#importExportData {
+    width: 95%;
+    background-color: #333; /* Dark background */
+    color: #eee; /* Light text */
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #555; /* Darker border */
+    resize: vertical; /* Allow vertical resize */
+    min-height: 100px;
+    line-height: 1.4;
+    font-family: monospace; /* Good for code/data */
+}
+body.light-mode #importExportData {
+    background-color: #eee; /* Light background */
+    color: #333; /* Dark text */
+    border-color: var(--border-color); /* Use theme border color */
 }
 
-/* Add additional styles as needed */
+/* ===== Layout ===== */
+.app-container {
+    display: flex;
+    width: 100%;
+}
+.sidebar {
+    width: 280px; /* Fixed width sidebar */
+    flex-shrink: 0; /* Prevent sidebar from shrinking */
+    background-color: var(--sidebar-bg);
+    padding: 20px;
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto; /* Allow sidebar scroll if content overflows */
+    transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease;
+}
+.main-content {
+    flex: 1; /* Main content takes remaining space */
+    padding: 20px 30px;
+    overflow-y: auto; /* Allow main content scroll */
+}
+
+/* ===== Sidebar ===== */
+.profile {
+    text-align: center;
+    margin-bottom: 20px;
+}
+.profile img#pfp { /* Target specific ID */
+    border-radius: 50%;
+    border: 3px solid var(--primary-color);
+    margin-bottom: 10px;
+    width: 110px;
+    height: 110px;
+    object-fit: cover;
+    display: block; /* Center image */
+    margin-left: auto;
+    margin-right: auto;
+}
+.profile-title { /* Class from target HTML */
+    font-weight: bold;
+    font-family: var(--font-header); /* Use header font */
+    color: var(--primary-color);
+    margin-bottom: 15px;
+    font-size: 1.1em;
+}
+.profile #showStatsBtn { /* Target specific ID */
+    display: block;
+    width: 80%;
+    margin: 15px auto 10px auto; /* Centering */
+    background-color: var(--info-color); /* Use info color */
+    color: white;
+}
+.profile #showStatsBtn:hover:not(:disabled) {
+     background-color: #17a2b8; /* Darker info color */
+}
+.sidebar-controls {
+    margin-top: 15px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+.sidebar-controls button { /* Smaller theme/music buttons */
+    font-size: 1.2em; /* Adjust icon size */
+    padding: 5px 10px;
+    background-color: var(--section-bg); /* Use section bg */
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+}
+.sidebar-controls button:hover:not(:disabled) {
+     background-color: var(--header-bg); /* Use header bg on hover */
+     color: var(--primary-color);
+}
+
+/* Core Stats block styling */
+.core-stats {
+    border: 1px solid var(--border-color);
+    padding: 15px;
+    border-radius: 5px;
+    background-color: rgba(0,0,0,0.1); /* Subtle background */
+    margin-bottom: 20px;
+}
+body.light-mode .core-stats {
+     background-color: rgba(0,0,0,0.03);
+}
+.core-stats h3 { /* Header for core stats */
+    margin-top: 0;
+    margin-bottom: 15px;
+    text-align: center;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 8px;
+    font-size: 1.1em;
+}
+.core-stats p {
+    margin-bottom: 10px;
+    font-size: 0.95em;
+    line-height: 1.3;
+    display: flex; /* Align icons/text nicely */
+    align-items: center;
+    gap: 5px;
+}
+.core-stats p[title] { /* Add hint for tooltips */
+    cursor: help;
+}
+#xpBarContainer {
+    background-color: #444; /* Dark track */
+    border-radius: 10px;
+    overflow: hidden;
+    height: 20px;
+    margin: 5px 0 15px 0; /* Adjusted margin */
+    border: 1px solid var(--border-color);
+}
+#xpBar {
+    background-color: var(--accent-color);
+    height: 100%;
+    width: 0%;
+    text-align: center;
+    line-height: 20px; /* Match height */
+    font-size: 0.8em;
+    font-weight: bold;
+    color: var(--button-text); /* Use button text color */
+    transition: width var(--animation-speed-medium) ease, background-color var(--animation-speed-medium) ease;
+    border-radius: 10px 0 0 10px; /* Round left side */
+}
+#xpBar.full {
+    background-color: var(--success-color);
+    border-radius: 10px; /* Fully rounded when full */
+}
+
+/* Sidebar Navigation */
+.sidebar-nav {
+    margin-top: 25px;
+    border-top: 1px solid var(--border-color); /* Separator */
+    padding-top: 15px;
+}
+.sidebar-nav h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    text-align: center;
+    font-size: 1.1em;
+}
+.sidebar-nav ul {
+    list-style: none;
+}
+.sidebar-nav li a {
+    display: block;
+    padding: 10px 15px;
+    border-bottom: 1px solid var(--border-color);
+    transition: background-color 0.2s ease, padding-left 0.2s ease;
+    border-radius: 4px;
+    margin-bottom: 2px;
+    color: var(--text-color); /* Ensure link color matches text */
+    opacity: 0.9;
+}
+.sidebar-nav li a:hover {
+    background-color: rgba(255, 255, 255, 0.05); /* Subtle hover */
+    padding-left: 20px; /* Indent on hover */
+    color: var(--primary-color); /* Highlight on hover */
+    opacity: 1;
+}
+.sidebar-nav li:last-child a {
+    border-bottom: none; /* Remove border from last item */
+}
+body.light-mode .sidebar-nav li a {
+     border-bottom-color: #ddd; /* Lighter border in light mode */
+     color: var(--text-color);
+}
+body.light-mode .sidebar-nav li a:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    color: var(--primary-color);
+}
+
+/* ===== Main Content ===== */
+.main-header {
+    background-color: var(--header-bg);
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    border: 1px solid var(--border-color);
+    transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease;
+    position: relative;
+    overflow: hidden;
+    text-align: center; /* Center header content */
+}
+.main-header h1 {
+    margin-bottom: 5px; /* Reduced margin */
+}
+#introText {
+    transition: opacity var(--transition-speed) ease;
+    font-size: 1.1em;
+    color: var(--text-muted-color); /* Muted color for intro */
+    margin-bottom: 0; /* Remove bottom margin */
+}
+
+/* Event Banner (from target, initially hidden) */
+.event-banner {
+    background-color: var(--accent-color);
+    color: var(--button-text);
+    padding: 8px 15px;
+    text-align: center;
+    font-weight: bold;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    animation: pulse 2s infinite;
+}
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.8; }
+    100% { opacity: 1; }
+}
+
+/* General Content Section */
+.content-section {
+    background-color: var(--section-bg);
+    padding: 25px;
+    margin-bottom: 30px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease;
+}
+.content-section h2 small { /* Style for "(Total Levels: X)" */
+    font-size: 0.7em;
+    color: var(--text-color); /* Use standard text color */
+    font-weight: normal;
+    font-family: var(--font-main); /* Use main font */
+}
+
+/* Actions Section */
+.actions .action-group {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap; /* Allow wrapping on small screens */
+    gap: 10px;
+}
+.actions label {
+    margin-right: 5px; /* Space after label */
+    font-weight: bold;
+}
+.actions input#questions { /* Target specific ID */
+    width: 120px; /* Fixed width */
+    flex-shrink: 0;
+}
+/* Buttons within actions */
+#add-questions-btn { background-color: var(--success-color); color: white;}
+#add-questions-btn:hover:not(:disabled) { background-color: #388E3C; }
+#dailyStudyBtn { background-color: var(--info-color); color: white;}
+#dailyStudyBtn:hover:not(:disabled) { background-color: #17a2b8; }
+#use-study-burst-btn { background-color: var(--warning-color); color: #1a1a1a; } /* Dark text on orange */
+#use-study-burst-btn:hover:not(:disabled) { background-color: #e68a00; }
+body.light-mode #use-study-burst-btn { color: #333; }
+
+/* Daily Tasks Section */
+/* Re-using some styles from previous CSS, adapted */
+.daily-tasks #dailyTaskList { /* Target specific ID */
+    list-style: none;
+    padding: 0;
+    margin: 15px 0 0 0;
+    max-height: 300px; /* Limit height */
+    overflow-y: auto;
+}
+.daily-tasks #dailyTaskList li {
+    background-color: rgba(0,0,0,0.1); /* Subtle background */
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    display: flex;
+    flex-wrap: wrap; /* Allow wrapping */
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    border-left: 4px solid var(--info-color); /* Blue border for incomplete */
+    transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease;
+}
+body.light-mode .daily-tasks #dailyTaskList li {
+    background-color: rgba(0,0,0,0.05);
+}
+.daily-tasks #dailyTaskList li.task-complete {
+    background-color: rgba(var(--success-color), 0.1); /* Greenish background */
+    border-left-color: var(--success-color); /* Green border */
+    opacity: 0.8; /* Slightly faded */
+}
+body.light-mode .daily-tasks #dailyTaskList li.task-complete {
+    background-color: rgba(40, 167, 69, 0.1);
+    border-left-color: #28a745;
+}
+.daily-tasks .task-desc {
+    flex-grow: 1; /* Take available space */
+    margin-right: 10px;
+}
+.daily-tasks li.task-complete .task-desc {
+    text-decoration: line-through; /* Strikethrough completed */
+    color: var(--text-muted-color);
+}
+.daily-tasks .task-progress {
+    font-style: italic;
+    color: var(--text-muted-color);
+    flex-shrink: 0; /* Prevent shrinking */
+    font-size: 0.9em;
+}
+.daily-tasks li.task-complete .task-progress {
+    color: var(--success-color); /* Green progress when complete */
+}
+.daily-tasks .task-reward {
+    font-weight: bold;
+    color: var(--primary-color);
+    flex-shrink: 0;
+    font-size: 0.9em;
+}
+.daily-tasks .task-reward-sp { /* Style for SP reward text */
+    color: var(--info-color); /* Use info color for SP */
+}
+
+/* Skills Section */
+.skills-section .skill-tree { /* Target specific class */
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+.skills-section .skill-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap; /* Wrap on small screens */
+    background-color: rgba(0,0,0,0.1);
+    padding: 15px;
+    border-radius: 5px;
+    border-left: 4px solid var(--accent-color); /* Use accent color border */
+    gap: 10px;
+}
+body.light-mode .skills-section .skill-item {
+    background-color: rgba(0,0,0,0.05);
+}
+.skills-section .skill-desc {
+    flex-grow: 1;
+    margin-right: 10px; /* Space before button */
+    min-width: 200px; /* Prevent excessive shrinking */
+}
+.skills-section .skill-level {
+    font-weight: bold;
+    color: var(--primary-color);
+}
+.skills-section .skill-cost {
+    font-size: 0.85em;
+    color: var(--text-color);
+    opacity: 0.8;
+}
+.skills-section .skill-item button {
+    flex-shrink: 0; /* Prevent button shrinking */
+    background-color: var(--info-color); /* Use info color for upgrade */
+    color: white;
+}
+.skills-section .skill-item button:hover:not(:disabled) {
+     background-color: #17a2b8; /* Darker info */
+}
+.skills-section button.max-level { /* Style for max level button */
+    background-color: var(--locked-color) !important; /* Use locked color */
+    color: #ccc !important;
+    cursor: default;
+}
+.skills-section button.max-level .skill-cost {
+    display: none; /* Hide cost when maxed */
+}
+
+
+/* Specialties Section */
+/* Using target layout styles */
+#specialties-container { /* Container for JS content */
+    /* Add any specific container styles if needed */
+}
+.specialties .specialty {
+    margin-bottom: 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    overflow: hidden; /* Needed for smooth expand/collapse */
+}
+.specialties .specialty h3 { /* Header for each specialty */
+    background-color: rgba(255, 255, 255, 0.05);
+    padding: 12px 15px;
+    margin: 0; /* Reset default h3 margin */
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color var(--transition-speed) ease;
+    font-size: 1.1em; /* Slightly smaller than section h2 */
+    color: var(--accent-color); /* Use accent color */
+}
+.specialties .specialty h3:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+body.light-mode .specialties .specialty h3 {
+     background-color: rgba(0,0,0,0.03);
+}
+body.light-mode .specialties .specialty h3:hover {
+    background-color: rgba(0, 0, 0, 0.08);
+}
+/* Style for expanded specialty header */
+.specialties .specialty.is-expanded > h3 {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+body.light-mode .specialties .specialty.is-expanded > h3 {
+    background-color: rgba(0, 0, 0, 0.08);
+}
+.specialties .specialty-toggle-indicator { /* Arrow icon */
+    margin-left: 10px;
+    transition: transform var(--transition-speed) ease;
+    display: inline-block; /* Needed for transform */
+    font-size: 0.8em;
+}
+.specialties .specialty.is-expanded .specialty-toggle-indicator {
+    transform: rotate(90deg); /* Rotate arrow when expanded */
+}
+.specialties .diseaseList { /* Container for diseases */
+    padding: 0 15px;
+    max-height: 0; /* Collapsed by default */
+    overflow: hidden;
+    transition: max-height var(--animation-speed-medium) ease-out, padding var(--transition-speed) ease-out;
+    background-color: rgba(0,0,0,0.05);
+}
+body.light-mode .specialties .diseaseList {
+    background-color: rgba(0,0,0,0.02);
+}
+.specialties .specialty.is-expanded .diseaseList { /* Expanded state */
+    padding: 15px;
+    max-height: 400px; /* Adjust as needed */
+    overflow-y: auto; /* Scroll if list is long */
+}
+.specialties .disease { /* Individual disease item */
+    padding: 8px 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px dashed var(--border-color);
+}
+.specialties .disease:last-child {
+    border-bottom: none;
+}
+.specialties .disease label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    flex-grow: 1; /* Label takes available space */
+}
+.specialties .disease input[type="checkbox"] {
+    margin-right: 10px;
+    flex-shrink: 0;
+    width: 16px; height: 16px; /* Explicit size */
+    accent-color: var(--primary-color); /* Use theme color for check */
+}
+.specialties .disease button { /* Review button */
+    font-size: 0.8em;
+    padding: 3px 8px;
+    margin-left: 10px; /* Space from other elements */
+    background-color: var(--secondary-color); /* Dark gold */
+    color: white;
+    flex-shrink: 0;
+}
+.specialties .disease button:hover {
+    background-color: var(--primary-color); /* Lighter gold on hover */
+    color: var(--button-text);
+}
+.specialties .review-info { /* Text showing review date */
+    font-size: 0.8em;
+    color: #aaa;
+    margin-left: 10px;
+    flex-shrink: 0;
+}
+body.light-mode .specialties .review-info {
+    color: #666;
+}
+/* Locked specialty styling */
+.specialties .specialty.locked h3 {
+    color: var(--locked-color);
+    cursor: default;
+    background-color: transparent; /* No background change */
+    opacity: 0.7;
+}
+.specialties .specialty.locked h3:hover {
+     background-color: transparent; /* No hover effect */
+}
+.specialties .specialty.locked .specialty-lock-info {
+    font-size: 0.8em;
+    margin-left: auto; /* Push lock info to the right */
+    color: var(--locked-color);
+}
+.specialties .specialty.locked .specialty-toggle-indicator {
+     display: none; /* Hide arrow */
+}
+
+/* Quest Log / Achievements / Reviews */
+/* Using details/summary for Quest Log if HTML is adapted, otherwise style original structure */
+/* Styling for original JS-toggled quest log */
+.quest-log h2 {
+    cursor: pointer; /* Indicate clickable */
+    display: flex; justify-content: space-between; align-items: center;
+}
+.quest-log #questToggleIndicator { /* Arrow for JS toggle */
+     transition: transform var(--transition-speed) ease; display: inline-block; font-size: 0.8em;
+}
+/* Assuming JS adds/removes an 'expanded' class to the H2 or section */
+.quest-log.expanded #questToggleIndicator { transform: rotate(90deg); }
+
+.quest-log ul, .achievement-log ul, .review-checklist ul {
+    list-style: none;
+    margin-top: 15px; /* Space below header */
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 15px;
+    background-color: rgba(0,0,0,0.05);
+    border-radius: 4px;
+}
+body.light-mode .quest-log ul, body.light-mode .achievement-log ul, body.light-mode .review-checklist ul {
+    background-color: rgba(0,0,0,0.02);
+}
+.quest-log ul#questList { /* Target specific ID, handle JS toggle */
+     max-height: 300px; /* Set height when visible */
+     /* display: none; /* Initially hidden if using JS toggle */
+     /* padding based on visibility */
+}
+/* Style list items */
+.quest-log li, .achievement-log li, .review-checklist li {
+    padding: 8px 0;
+    border-bottom: 1px dashed var(--border-color);
+    font-size: 0.95em;
+}
+.quest-log li:last-child, .achievement-log li:last-child, .review-checklist li:last-child {
+    border-bottom: none;
+}
+/* Achievement specific list item */
+.achievement-log li {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+.achievement-name {
+    font-weight: bold;
+    margin-bottom: 0;
+    display: flex; align-items: center; gap: 5px; /* Align icon/text */
+}
+.achievement-desc {
+    font-size: 0.9em;
+    opacity: 0.8;
+    padding-left: 1.5em; /* Indent description */
+}
+/* Review checklist specific list item */
+.review-checklist li {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+.review-checklist button { /* Review button */
+    font-size: 0.9em;
+    padding: 5px 10px;
+    background-color: var(--success-color);
+    color: white;
+    flex-shrink: 0;
+}
+body.light-mode .review-checklist button {
+    background-color: #28a745;
+}
+
+/* Settings Section */
+.settings .setting-group {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+}
+.settings .setting-group:first-of-type { /* No border/padding for first group */
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+}
+/* Style for potential future customization area */
+.settings .customization h3 {
+    margin-bottom: 15px;
+}
+.settings .setting-option {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+.settings .setting-option label {
+    font-weight: bold;
+    min-width: 100px; /* Align labels */
+    flex-shrink: 0;
+}
+.settings .setting-option select {
+    flex-grow: 1;
+    max-width: 300px; /* Limit select width */
+}
+/* Specific button styling in settings */
+.settings #importExportBtn { background-color: var(--info-color); color: white;}
+.settings #importExportBtn:hover:not(:disabled) { background-color: #17a2b8;}
+/* Danger button style already defined */
+
+
+/* Modals */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto; /* Enable scroll if needed */
+    background-color: var(--modal-bg); /* Semi-transparent background */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity var(--transition-speed) ease, visibility 0s var(--transition-speed) linear;
+}
+.modal.is-open { /* Class to control visibility */
+    display: block; /* Make it part of layout */
+    opacity: 1;
+    visibility: visible;
+    transition-delay: 0s;
+}
+.modal-content {
+    background-color: var(--modal-content-bg);
+    margin: 5% auto; /* Centered, more space from top */
+    padding: 30px;
+    border: 1px solid var(--border-color);
+    width: 90%;
+    max-width: 600px; /* Max width */
+    border-radius: 8px;
+    position: relative;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    transform: translateY(-20px);
+    transition: transform var(--transition-speed) ease;
+}
+.modal.is-open .modal-content {
+    transform: translateY(0); /* Animate in */
+}
+.close { /* Modal close button */
+    color: #aaa;
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    background: none; /* No background */
+    border: none; /* No border */
+    padding: 0 5px;
+    line-height: 1; /* Ensure consistent height */
+}
+.close:hover, .close:focus {
+    color: var(--text-color); /* Use theme text color on hover */
+    text-decoration: none;
+    outline: none;
+    box-shadow: none;
+}
+/* Specific Modal Content Styling */
+.notification-modal .modal-content { /* Smaller modal for notifications */
+    max-width: 450px;
+    text-align: center;
+}
+#notificationMessage { /* Notification text */
+     font-size: 1.1em; margin-bottom: 20px;
+}
+#resetModal .modal-content p { /* Reset confirmation text */
+     color: var(--danger-color); font-weight: bold; text-align: center;
+}
+#stats-content {
+    text-align: left;
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 10px; /* Space for scrollbar */
+}
+#stats-content ul {
+    list-style: none;
+    padding-left: 0;
+}
+#stats-content li {
+    padding: 5px 0;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.9em;
+}
+#stats-content li:last-child {
+    border-bottom: none;
+}
+#stats-content strong { /* Highlight stat labels */
+     color: var(--primary-color);
+}
+
+/* Toasts (from target) */
+#toast-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1050;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+}
+.toast {
+    background-color: rgba(40, 40, 40, 0.95);
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 5px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    opacity: 0;
+    transition: opacity var(--animation-speed-medium) ease, transform var(--animation-speed-medium) ease;
+    transform: translateX(110%); /* Start off screen */
+    max-width: 350px;
+    pointer-events: none; /* Allow clicking through hidden toasts */
+}
+.toast.show {
+    opacity: 1;
+    transform: translateX(0); /* Slide in */
+    pointer-events: auto;
+}
+/* Toast type colors */
+.toast-success { background-color: rgba(76, 175, 80, 0.95); color: white; }
+.toast-error { background-color: rgba(244, 67, 54, 0.95); color: white; }
+.toast-warning { background-color: rgba(255, 152, 0, 0.95); color: #333; } /* Dark text on warning */
+.toast-info { background-color: rgba(33, 150, 243, 0.95); color: white; }
+/* Light mode toasts */
+body.light-mode .toast { background-color: rgba(255, 255, 255, 0.98); color: #333; border: 1px solid #ccc; box-shadow: 0 3px 10px rgba(0,0,0,0.1); }
+body.light-mode .toast-success { background-color: #d4edda; color: #155724; border-color: #c3e6cb; }
+body.light-mode .toast-error { background-color: #f8d7da; color: #721c24; border-color: #f5c6cb;}
+body.light-mode .toast-warning { background-color: #fff3cd; color: #856404; border-color: #ffeeba;}
+body.light-mode .toast-info { background-color: #d1ecf1; color: #0c5460; border-color: #bee5eb;}
+
+/* Celebration Overlay (from target) */
+.celebration {
+    position: fixed;
+    inset: 0; /* Cover entire screen */
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity var(--animation-speed-fast) ease, visibility 0s var(--animation-speed-fast) linear;
+}
+.celebration.show { /* Class added by JS */
+    opacity: 1;
+    visibility: visible;
+    transition-delay: 0s;
+}
+#celebration-content {
+    color: var(--primary-color);
+    font-size: 2.5em;
+    font-family: var(--font-header);
+    text-align: center;
+    padding: 30px;
+    transform: scale(0.5); /* Start small */
+    transition: transform var(--animation-speed-fast) ease-out;
+}
+.celebration.show #celebration-content {
+    transform: scale(1); /* Scale up when shown */
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 1024px) {
+    .sidebar { width: 240px; } /* Slightly narrower sidebar */
+    .main-content { padding: 20px; }
+}
+
+@media (max-width: 768px) { /* Tablet/Mobile breakpoint */
+    .app-container { flex-direction: column; } /* Stack sidebar on top */
+    .sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+        height: auto; /* Allow height to adjust */
+        max-height: 50vh; /* Limit height */
+        overflow-y: auto; /* Scroll if needed */
+    }
+    .main-content { padding: 15px; }
+    .skill-item { flex-direction: column; align-items: stretch; } /* Stack skill items */
+    .skill-item button { width: auto; align-self: flex-end; margin-top: 10px; } /* Button to the right */
+    .modal-content { width: 90%; margin: 10% auto; } /* Adjust modal size */
+    .actions .action-group { flex-direction: column; align-items: stretch; } /* Stack action items */
+    .actions .action-group input[type="number"] { width: 100%; }
+    .actions .action-group button { width: 100%; justify-content: center; }
+    .settings .setting-option { flex-direction: column; align-items: stretch; } /* Stack settings */
+    .settings .setting-option label { min-width: auto; margin-bottom: 5px; }
+    .settings .setting-option select { max-width: none; }
+    .specialties .disease { flex-direction: column; align-items: flex-start; } /* Stack disease info */
+    .specialties .disease button, .specialties .review-info { margin-left: 0; margin-top: 5px; }
+}
+
+@media (max-width: 480px) { /* Small mobile breakpoint */
+    body { font-size: 15px; } /* Slightly smaller base font */
+    .sidebar { padding: 15px; max-height: 60vh; } /* More height for sidebar */
+    .main-content { padding: 10px; }
+    .content-section { padding: 15px; margin-bottom: 20px; }
+    h1 { font-size: 1.8em; }
+    h2 { font-size: 1.4em; }
+    h3 { font-size: 1.1em; }
+    button { padding: 10px 12px; }
+    .profile img#pfp { width: 90px; height: 90px; }
+    .sidebar-nav li a { padding: 8px 10px; }
+    .modal-content { padding: 20px; width: 95%; margin: 5% auto; }
+    #toast-container { right: 10px; bottom: 10px; width: calc(100% - 20px); } /* Full width toasts */
+    .toast { max-width: 100%; }
+    #celebration-content { font-size: 2em; }
+}
+
+/* Custom Scrollbar Styling (Apply generally) */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+::-webkit-scrollbar-track {
+    background: var(--sidebar-bg); /* Use sidebar bg for track */
+    border-radius: 5px;
+}
+::-webkit-scrollbar-thumb {
+    background: var(--border-color); /* Use border color for thumb */
+    border-radius: 5px;
+    border: 2px solid var(--sidebar-bg); /* Create inset effect */
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted-color); /* Lighter on hover */
+}
+body.light-mode ::-webkit-scrollbar-track {
+     background: #f1f1f1;
+}
+body.light-mode ::-webkit-scrollbar-thumb {
+     background: #ccc;
+     border-color: #f1f1f1;
+}
+body.light-mode ::-webkit-scrollbar-thumb:hover {
+      background: #aaa;
+}
