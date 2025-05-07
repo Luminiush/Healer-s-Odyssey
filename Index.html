@@ -1,184 +1,190 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Healer's Odyssey - Apex Edition v6 (Audio Toggle Fix)</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Healer's Odyssey</title> <link href="https://fonts.googleapis.com/css2?family=Cinzel&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Optional: Hide the default audio player controls */
+        #bgmAudio {
+            display: none;
+        }
+    </style>
 </head>
-<body class="bg-gray-900 text-gray-200 min-h-screen p-4 md:p-8">
+<body>
 
-    <audio loop id="bg-music"> <source src="https://cdn.pixabay.com/download/audio/2023/03/09/audio_3d9f6cc5cf.mp3?filename=medieval-fantasy-epic-142994.mp3" type="audio/mpeg"> </audio>
-    <div id="achievement-toast" class="hidden"></div>
+    <div id="app" class="app-container">
 
-    <div id="achievements-modal" class="modal modal-hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4"> 
-        <div class="modal-content bg-gray-800 rounded-xl shadow-xl p-6 w-full max-w-lg border border-gray-700/50 max-h-[80vh] overflow-y-auto"> 
-            <div class="flex justify-between items-center mb-4"> 
-                <h2 class="text-2xl font-semibold text-blue-300">Achievements</h2> 
-                <button onclick="closeModal('achievements-modal')" class="text-gray-400 hover:text-white transition"> 
-                    <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                    </svg> 
-                </button> 
-            </div> 
-            <div id="achievements-list" class="space-y-3"> 
-                <p class="text-gray-400 italic">No achievements unlocked yet.</p> 
-            </div> 
-        </div> 
-    </div>
+        <aside class="sidebar">
+            <div class="profile">
+                 <img id="pfp" src="https://imgur.com/nDIwDRI.png" alt="Character Avatar" onerror="this.src='https://placehold.co/110x110/2a2a2a/f4c430?text=Healer'; this.onerror=null;">
+                 <p id="pfp-title" class="profile-title">Level 1 Healer</p>
+                 <button id="showStatsBtn" title="Show Detailed Stats">📊 Show Stats</button>
+                 <div class="sidebar-controls">
+                     <button id="themeToggle" title="Toggle Light/Dark Theme" aria-label="Toggle Theme">☀️</button>
+                     <button id="musicToggle" title="Toggle Background Music" aria-label="Toggle Music">🎵 Play</button>
+                 </div>
+            </div>
 
-    <div class="container mx-auto max-w-3xl">
-        <div class="bg-gradient-to-r from-blue-800 to-indigo-900 p-5 md:p-6 rounded-xl shadow-xl mb-8 text-center border border-blue-600/50">
-            <h1 class="text-3xl md:text-4xl font-bold text-white mb-1 tracking-wider">Healer's Odyssey</h1>
-            <p class="text-base text-blue-300 font-title font-medium">Apex Edition v6</p>
+            <div class="stats core-stats">
+                 <h3>Core Stats</h3>
+                 <p>🧬 XP: <span id="xp">0</span> / <span id="xpNeeded">110</span></p>
+                 <div id="xpBarContainer"><div id="xpBar">0%</div></div>
+                 <p>🧪 Level: <span id="level">1</span></p>
+                 <p>✨ SP: <span id="skill-points">0</span> (<span id="available-skill-points">0</span> Avail)</p>
+                 <p>🏆 Achieved: <span id="achievements">0</span></p>
+                 <p title="Login daily to increase your streak!">🔥 Daily Streak: <span id="daily-streak">0</span> (Max: <span id="longest-streak">0</span>)</p>
+                 <p>📊 Questions Done: <span id="questions-total">0</span></p>
+                 <p>🧐 Reviews Done: <span id="reviews-total">0</span></p>
+                 <p>💡 Total Skill Levels: <span id="skill-levels-total">0</span></p>
+            </div>
+
+            <nav class="sidebar-nav">
+                 <h3>Navigation</h3>
+                 <ul>
+                     <li><a href="#actions-section">Actions</a></li>
+                     <li><a href="#daily-tasks-section">Daily Tasks</a></li>
+                     <li><a href="#skills-section">Skills</a></li>
+                     <li><a href="#specialties-section">Specialties</a></li>
+                     <li><a href="#quests-section">Quest Log</a></li>
+                     <li><a href="#achievements-section">Achievements</a></li>
+                     <li><a href="#reviews-section">Reviews</a></li>
+                     <li><a href="#settings-section">Settings</a></li>
+                 </ul>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="main-header">
+                 <h1>Healer's Odyssey</h1>
+                 <p id="introText">Welcome, brave healer. The path to mastery is long. Prove your dedication!</p>
+            </header>
+
+            <section id="actions-section" class="content-section actions">
+                 <h2>Actions</h2>
+                 <div class="action-group">
+                     <label for="questions">Questions Solved:</label>
+                     <input type="number" id="questions" min="1" placeholder="Enter number">
+                     <button id="add-questions-btn">Add XP</button>
+                 </div>
+                 <div class="action-group">
+                     <button id="dailyStudyBtn" title="Mark your daily study session complete. Resets daily.">Daily Check-in</button>
+                     <button id="use-study-burst-btn" title="Gain instant XP based on Study Burst skill level (once per day)">Use Study Burst</button>
+                 </div>
+            </section>
+
+            <section id="daily-tasks-section" class="content-section daily-tasks">
+                 <h2>Daily Tasks <span id="dailyTasksDate" style="font-size: 0.8em; color: var(--text-muted-color);"></span></h2>
+                 <ul id="dailyTaskList"></ul>
+            </section>
+
+            <section id="skills-section" class="content-section skills-section">
+                <h2>Skills <small>(Total Levels: <span id="skill-levels-total">0</span>)</small></h2>
+                <p>Available Skill Points: <span id="available-skill-points">0</span></p>
+                <div class="skill-tree">
+                     <div class="skill-item">
+                         <span class="skill-desc">XP Boost: +<span class="skill-level" id="xp-boost-level">0</span>% XP gain. (Max Lvl 10)</span>
+                         <button id="buy-xp-boost-btn" data-skill="xpBoost" data-base-cost="1" data-max-level="10"> Upgrade <span class="skill-cost">(Cost: 1 SP)</span> </button>
+                     </div>
+                     <div class="skill-item">
+                         <span class="skill-desc">Review Mastery: +<span class="skill-level" id="review-mastery-level">0</span> XP per review. (Max Lvl 10)</span>
+                         <button id="buy-review-mastery-btn" data-skill="reviewMastery" data-base-cost="1" data-max-level="10"> Upgrade <span class="skill-cost">(Cost: 1 SP)</span> </button>
+                     </div>
+                     <div class="skill-item">
+                         <span class="skill-desc">Accelerated Recall: <span class="skill-level" id="accelerated-recall-level">0</span>% faster review intervals. (Max Lvl 10)</span>
+                         <button id="buy-accelerated-recall-btn" data-skill="acceleratedRecall" data-base-cost="2" data-max-level="10"> Upgrade <span class="skill-cost">(Cost: 2 SP)</span> </button>
+                     </div>
+                     <div class="skill-item">
+                         <span class="skill-desc">Study Burst: Gain <span class="skill-level" id="study-burst-level">0</span> instant XP (once/day). (Max Lvl 10)</span>
+                         <button id="buy-study-burst-btn" data-skill="studyBurst" data-base-cost="2" data-max-level="10"> Upgrade <span class="skill-cost">(Cost: 2 SP)</span> </button>
+                     </div>
+                     <div class="skill-item">
+                         <span class="skill-desc">Efficient Learner: <span class="skill-level" id="efficient-learner-level">0</span>% chance for bonus XP & faster first review when learning. (Max Lvl 5)</span>
+                         <button id="buy-efficient-learner-btn" data-skill="efficientLearner" data-base-cost="3" data-max-level="5"> Upgrade <span class="skill-cost">(Cost: 3 SP)</span> </button>
+                     </div>
+                 </div>
+            </section>
+
+            <section id="specialties-section" class="content-section specialties">
+                 <h2>Specialties</h2>
+                 <div id="specialties-container">
+                     <div id="specialties"></div>
+                 </div>
+            </section>
+
+            <section id="quests-section" class="content-section quest-log">
+                 <h2>Quest Log <span id="questToggleIndicator">►</span></h2>
+                 <ul id="questList"></ul>
+            </section>
+
+            <section id="achievements-section" class="content-section achievement-log">
+                 <h2>Achievements</h2>
+                 <ul id="achievementList"></ul>
+            </section>
+
+            <section id="reviews-section" class="content-section review-checklist">
+                 <h2>Review Checklist</h2>
+                 <p>Items ready for review will appear here.</p>
+                 <ul id="reviewList"></ul>
+            </section>
+
+            <section id="settings-section" class="content-section settings">
+                 <h2>Settings</h2>
+                 <div class="setting-group">
+                     <button id="importExportBtn">Import / Export Progress</button>
+                     <button id="resetBtn" class="danger-button">Reset Progress</button>
+                     <p style="font-size: 0.7em; margin-top: 15px; color: var(--text-muted-color);">
+                         Background Music: "Lost Frontier" Kevin MacLeod (incompetech.com)<br>
+                         Licensed under Creative Commons: By Attribution 3.0<br>
+                         http://creativecommons.org/licenses/by/3.0/
+                     </p>
+                 </div>
+            </section>
+
+        </main>
+
+        <div id="resetModal" class="modal">
+             <div class="modal-content">
+                 <span id="closeResetModal" class="close">&times;</span>
+                 <p>Are you sure you want to reset your entire journey? This cannot be undone!</p>
+                 <button id="confirmReset" class="danger-button">Yes, Reset</button>
+                 <button id="cancelReset">Cancel</button>
+             </div>
         </div>
 
-        <div>
-            <div id="world-select-screen" class=""> 
-                <div class="bg-gray-800 bg-opacity-80 backdrop-blur-md p-6 rounded-xl shadow-lg border border-gray-700/50 pulse-glow-animation"> 
-                    <h2 class="text-2xl font-semibold mb-5 text-center text-blue-300">Choose Your Realm</h2> 
-                    <div id="worlds" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div> 
-                </div> 
-            </div>
-            <div id="mission-select-screen" class="hidden"> 
-                <div class="bg-gray-800 bg-opacity-90 backdrop-blur-md p-6 rounded-xl shadow-lg border border-gray-700/50"> 
-                    <h2 id="world-title" class="text-2xl font-semibold mb-5 text-center text-blue-300"></h2> 
-                    <div id="mission-list" class="space-y-3 mb-5 max-h-[60vh] overflow-y-auto pr-2"></div> 
-                    <button onclick="goBackToWorlds()" class="w-full md:w-auto bg-gray-600 hover:bg-gray-500 text-white font-semibold py-2 px-5 rounded-lg transition duration-200 ease-in-out shadow hover:shadow-md flex items-center justify-center"> 
-                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                        </svg> 
-                        Back to Realms 
-                    </button> 
-                </div> 
-            </div>
-            <div id="challenge-screen" class="hidden">
-                <div class="bg-gray-800 bg-opacity-90 backdrop-blur-md p-6 rounded-xl shadow-lg border border-gray-700/50">
-                    <div class="flex justify-center items-start mb-2 h-14"> 
-                        <div class="w-full text-center">
-                            <div id="timer-display" class="text-2xl font-bold text-yellow-400 h-8"></div>
-                            <div id="modifier-display" class="text-xs text-purple-300 italic h-6"></div>
-                        </div>
-                    </div>
-                    <div id="boss-visual" class="w-full flex justify-center items-center mb-4"></div>
-                    <div id="boss-battle-ui" class="hidden mb-5 space-y-3"> 
-                        <div class="flex justify-between items-center gap-4"> 
-                            <div class="flex-1"> 
-                                <h3 class="text-sm font-semibold text-center text-blue-300 mb-1">Your Focus</h3> 
-                                <div id="player-focus-bar" class="bar-background"> 
-                                    <div id="player-focus-fill" class="bar-fill focus-bar-fill"></div> 
-                                    <span id="player-focus-text" class="bar-text">3 / 3</span> 
-                                </div> 
-                            </div> 
-                            <div class="flex-1"> 
-                                <h3 id="boss-name" class="text-sm font-semibold text-center text-red-400 mb-1">Boss</h3> 
-                                <div id="boss-hp-bar" class="bar-background"> 
-                                    <div id="boss-hp-fill" class="bar-fill hp-bar-fill"></div> 
-                                    <span id="boss-hp-text" class="bar-text">100 / 100</span> 
-                                </div> 
-                            </div> 
-                        </div> 
-                        <p id="boss-status" class="text-center text-sm text-yellow-400 h-4"></p> 
-                    </div>
-                    <div id="items-ui" class="mb-4 text-center space-x-2 h-8"></div>
-                    <h2 id="challenge-title" class="text-xl font-semibold mb-3 text-center text-blue-300"></h2>
-                    <div id="difficulty-choice" class="mb-5 text-center space-x-3 hidden"> 
-                        <p class="text-sm text-gray-400 mb-2">Choose challenge difficulty:</p> 
-                        <button onclick="showBossQuestion('easy')" class="difficulty-button easy text-white font-semibold py-1 px-4 rounded-lg border-2 transition duration-200 ease-in-out shadow hover:shadow-md">Easy</button> 
-                        <button onclick="showBossQuestion('medium')" class="difficulty-button medium text-white font-semibold py-1 px-4 rounded-lg border-2 transition duration-200 ease-in-out shadow hover:shadow-md">Medium</button> 
-                        <button onclick="showBossQuestion('hard')" class="difficulty-button hard text-white font-semibold py-1 px-4 rounded-lg border-2 transition duration-200 ease-in-out shadow hover:shadow-md">Hard</button> 
-                    </div>
-                    <p id="question" class="text-lg mb-5 min-h-[3em] text-center bg-gray-700/50 p-3 rounded-lg hidden"></p>
-                    <div id="options" class="space-y-2 mb-5"></div>
-                    <p id="feedback" class="text-center font-semibold min-h-[1.5em] mb-5"></p>
-                    <button id="next-btn" class="hidden w-full bg-green-600 hover:bg-green-500 text-white font-semibold py-2 px-5 rounded-lg transition duration-200 ease-in-out shadow hover:shadow-md flex items-center justify-center mt-4"> 
-                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                        </svg> 
-                        Continue Journey 
-                    </button>
-                </div>
-            </div>
+        <div id="notificationModal" class="modal notification-modal">
+             <div class="modal-content">
+                 <span id="closeNotificationModal" class="close">&times;</span>
+                 <p id="notificationMessage"></p>
+                 <button id="okNotificationModalBtn" style="display: none; margin-top: 15px;">OK</button>
+             </div>
         </div>
 
-        <div class="mt-8 bg-gray-800/80 backdrop-blur-md p-5 rounded-xl shadow-lg border border-gray-700/50">
-            <h2 class="text-xl font-semibold mb-4 text-center text-blue-300">Your Progress</h2>
-            <div class="grid grid-cols-2 md:grid-cols-6 gap-4 text-center items-center"> 
-                <div> 
-                    <p class="text-xs text-gray-400 uppercase tracking-wider">Level</p> 
-                    <p id="level" class="text-3xl font-bold text-green-400 font-title">1</p> 
-                </div>
-                <div class="col-span-2 md:col-span-1"> 
-                    <p class="text-xs text-gray-400 uppercase tracking-wider mb-1">XP</p> 
-                    <div class="xp-bar-background mb-1"> 
-                        <div id="xp-bar-fill" class="xp-bar-fill" style="width: 0%;"></div> 
-                    </div> 
-                    <p class="text-xs font-semibold"><span id="xp">0</span> / <span id="next-xp">100</span></p> 
-                </div>
-                <div> 
-                    <p class="text-xs text-gray-400 uppercase tracking-wider">Streak</p> 
-                    <p id="streak" class="text-3xl font-bold text-yellow-400 font-title">0</p> 
-                </div>
-                <div> 
-                    <p class="text-xs text-gray-400 uppercase tracking-wider">Credits</p> 
-                    <p id="currency-stat" class="text-2xl font-bold text-yellow-300 font-title">0 🪙</p> 
-                </div> 
-                <div> 
-                    <p class="text-xs text-gray-400 uppercase tracking-wider">Skill Pts</p> 
-                    <p id="skill-points-stat" class="text-3xl font-bold text-purple-400 font-title">0</p> 
-                </div>
-                <div class="col-span-2 md:col-span-1 flex flex-col items-center space-y-2">
-                    <button onclick="openModal('shop-modal')" class="w-full bg-green-700 hover:bg-green-600 text-white text-xs font-semibold py-1.5 px-3 rounded-full transition duration-200 flex items-center justify-center"> 
-                        <svg class="icon icon-sm" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                        </svg> 
-                        Shop 
-                    </button> 
-                    <button onclick="openModal('perks-modal')" class="w-full bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold py-1.5 px-3 rounded-full transition duration-200 flex items-center justify-center"> 
-                        <svg class="icon icon-sm" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.196-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-                        </svg> 
-                        Perks 
-                    </button>
-                    <button onclick="openModal('achievements-modal')" class="w-full bg-yellow-600 hover:bg-yellow-500 text-gray-900 text-xs font-semibold py-1.5 px-3 rounded-full transition duration-200 flex items-center justify-center"> 
-                        <svg class="icon icon-sm" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg> 
-                        Achievements 
-                    </button>
-                    <button onclick="openModal('stats-modal')" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-semibold py-1.5 px-3 rounded-full transition duration-200 flex items-center justify-center"> 
-                        <svg class="icon icon-sm" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg> 
-                        Stats 
-                    </button>
-                    <button onclick="openModal('settings-modal')" class="w-full bg-gray-600 hover:bg-gray-500 text-white text-xs font-semibold py-1.5 px-3 rounded-full transition duration-200 flex items-center justify-center"> 
-                        <svg class="icon icon-sm" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg> 
-                        Settings 
-                    </button>
-                    <button id="toggle-music-btn" onclick="toggleMusic()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold py-1.5 px-3 rounded-full transition duration-200 flex items-center justify-center"> 
-                        <svg id="music-icon-on" class="icon icon-sm" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
-                        </svg> 
-                        <svg id="music-icon-off" class="icon icon-sm hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M5.586 15L4 16.586a1 1 0 01-1.414-1.414L6.172 11.5a1 1 0 011.414 0L11 14.914l3.586-3.586a1 1 0 011.414 1.414L12.414 16.5 16 19.086a1 1 0 01-1.414 1.414L11 16.914l-3.586 3.586a1 1 0 01-1.414-1.414L9.586 15zM9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
-                        </svg> 
-                        <span id="music-btn-text" class="ml-1">On</span> 
-                    </button>
-                </div>
-            </div>
+        <div id="statsModal" class="modal">
+             <div class="modal-content">
+                 <span id="closeStatsModal" class="close">&times;</span>
+                 <h2>Statistics</h2>
+                 <div id="stats-content"></div>
+             </div>
         </div>
 
-    </div>
+        <div id="importExportModal" class="modal">
+             <div class="modal-content">
+                 <span id="closeImportExportModal" class="close">&times;</span>
+                 <h2>Import / Export Progress</h2>
+                 <p>Copy the text below to back up your progress. Paste saved data here and click 'Import' to restore.</p>
+                 <textarea id="importExportData" rows="8" style="width: 95%; background-color: #333; color: #eee; padding: 10px; border-radius: 5px; border: 1px solid #555;"></textarea>
+                 <button id="copyExportDataBtn">Copy to Clipboard</button>
+                 <button id="importDataBtn" style="background-color: var(--success-color);">Import Data (Overwrites Current)</button>
+             </div>
+        </div>
 
-    <script type="module" src="script.js"></script>
+    </div> <audio id="bgmAudio" loop preload="metadata" src="https://incompetech.com/music/royalty-free/mp3-royaltyfree/Lost%20Frontier.mp3" style="display: none;">
+        Your browser does not support the audio element.
+    </audio>
+    <script src="script.js"></script>
+
 </body>
 </html>
