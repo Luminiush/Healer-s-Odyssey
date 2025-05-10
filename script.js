@@ -38,6 +38,16 @@ document.addEventListener('DOMContentLoaded', () => {
     let dailyTasks = [];
     let lastTasksGeneratedDate = null;
 
+// Monthly Tasks state
+let monthlyTasks = [];
+let lastMonthlyTasksGeneratedDate = null; // e.g., "2023-11" (Year-Month)
+let monthlyTaskProgress = { // To track progress specific to the current month
+    topicsStudiedThisMonthCount: 0,
+    reviewsCompletedThisMonthCount: 0,
+    questionsAnsweredThisMonthCount: 0,
+    levelsGainedThisMonthCount: 0,
+    levelAtMonthStart: 0 // Important for 'levelsGainedThisMonthCount'
+};
 
     // ===========================
     // ===== Constants =====
@@ -87,6 +97,43 @@ document.addEventListener('DOMContentLoaded', () => {
          75: { src: 'https://imgur.com/n1Bpdoq.png', title: 'Level 75 Legend' },
          100: { src: 'https://imgur.com/RzGkeGM.png', title: 'Level 100 Divine' }
      };
+
+// Monthly Task Configuration
+const MONTHLY_TASK_CONFIG = [
+    {
+        id: 'study_topics_monthly',
+        desc: 'Study {target} diseases/topics during this month',
+        targets: [50, 100, 200], // Number of topics to study in the current month
+        rewardsXP: [750, 1500, 3000],
+        rewardsSP: [2, 3, 5],
+        metric: 'topicsStudiedThisMonthCount'
+    },
+    {
+        id: 'complete_reviews_monthly',
+        desc: 'Complete {target} reviews during this month',
+        targets: [40, 80, 120],
+        rewardsXP: [600, 1200, 2400],
+        rewardsSP: [1, 2, 4],
+        metric: 'reviewsCompletedThisMonthCount'
+    },
+    {
+        id: 'answer_questions_monthly',
+        desc: 'Solve {target} questions during this month',
+        targets: [750, 1500, 3000],
+        rewardsXP: [500, 1000, 2000],
+        rewardsSP: [1, 2, 3],
+        metric: 'questionsAnsweredThisMonthCount'
+    },
+    {
+        id: 'level_ups_monthly',
+        desc: 'Gain {target} levels during this month',
+        targets: [2, 5, 10], // Gain X levels
+        rewardsXP: [1000, 2500, 5000],
+        rewardsSP: [3, 5, 7],
+        metric: 'levelsGainedThisMonthCount'
+    }
+];
+const NUM_MONTHLY_TASKS_TO_OFFER = 2; // How many monthly tasks to show at a time
 
     // ==================================
     // ===== DOM Element References =====
@@ -150,6 +197,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const buyEfficientLearnerBtnEl = document.getElementById('buy-efficient-learner-btn');
     const dailyTasksDateEl = document.getElementById('dailyTasksDate');
     const dailyTaskListEl = document.getElementById('dailyTaskList');
+    const monthlyTasksDateEl = document.getElementById('monthlyTasksDate');
+    const monthlyTaskListEl = document.getElementById('monthlyTaskList');
+  const specialtySearchInputEl = document.getElementById('specialtySearchInput');
     // --- BGM Audio Element Reference ---
     const bgmAudioElement = document.getElementById('bgmAudio'); // Reference to the <audio> tag in HTML
 
@@ -1924,7 +1974,22 @@ const specialties = {
             "Angioedema (Hereditary & Acquired) (Causes & Management)", // Expanded
             "Urticaria (Chronic Spontaneous Urticaria)", // Overlap with Derm
             "Mast Cell Disorders (Mastocytosis, MCAS)", // Expanded
-            "Primary Immunodeficiency Disorders (PIDD) (Classification, Diagnosis, Management - SCID, CVID, XLA, CGD, WAS)", // Expanded
+            "Severe Combined Immunodeficiency (SCID)",
+"Chronic mucocutaneous candidiasis",
+"Selective IgA deficiency",
+"Wiskott-Aldrich syndrome",
+"Ataxia-Telangiectasia",
+"Chediak-Higashi syndrome",
+"DiGeorge Syndrome (Thymic Hypoplasia)",
+"Hyper-IgE Syndrome (Job Syndrome)",
+"X-linked Agammaglobulinemia (Bruton’s Agammaglobulinemia)",
+"Common Variable Immunodeficiency (CVID)",
+"Hyper-IgM Syndrome",
+"Chronic Granulomatous Disease (CGD)",
+"Myeloperoxidase Deficiency (MPO Deficiency)",
+"C3 Deficiency",
+"C5–C9 (Membrane Attack Complex) Deficiencies",
+"C1 Esterase Inhibitor Deficiency (Hereditary Angioedema)",
             "Secondary Immunodeficiency (Causes - HIV, Malignancy, Immunosuppression)", // Expanded
             "Autoimmune Principles (Advanced Pathogenesis - Breakdown of Self-Tolerance)", // Expanded
             "Autoantibody Testing (Interpretation)", // Overlap with Rheum/Pathology
@@ -1938,7 +2003,7 @@ const specialties = {
             "Pulmonary Function Tests in Allergic Disease", // Overlap with Pulm
             "Immunologic Evaluation (Flow Cytometry, Lymphocyte Proliferation, Cytokine Assays)" // Overlap with Pathology/Lab Med
         ],
-        "requiredLevel": 34,
+        "requiredLevel": 5,
         "icon": "🤧"
     },
     "Geriatrics": {
@@ -2312,14 +2377,34 @@ const specialties = {
  * Features deeper tiers, combination mastery, and more challenging goals.
  */
 
-const achievementIcons = {
-    // Core Progression (Higher Tiers)
-    "First Blood": "🩸", "Novice Diagnostician": "🔰", "Persistent Scholar": "📚", "Dedicated Healer": "💪",
-    "Apprentice Healer": "🎓", "Cure Connoisseur": "🍷", "Medical Polymath": "🧠",
-    "Grandmaster Physician": "👑", "Medical Omniscient": "🌌", "Universal Healer": "💫",
-    "Cosmic Clinician": "🌠", "Master of Reality": "⚛️",
+/*
+/*
+* =====================================================
+* ===== REVISED Game Achievements Data (May 9 v3) =====
+* =====================================================
+* Disease study achievement tiers adjusted for reasonable targets
+* based on estimated current content (~1500 topics).
+* Added missing descriptions.
+* Other achievements remain the same from previous version.
+*/
 
-    // Level Milestones (Even More Expanded)
+// Object mapping achievement names to their display icons
+const achievementIcons = {
+    // Core Progression (Disease Study - REVISED Tiers & Names)
+    "First Blood": "🩸",          // Study 1
+    "Novice Diagnostician": "🔰", // Study 5
+    "Persistent Scholar": "📚",   // Study 25
+    "Domain Discoverer": "🔑",     // Study 50 (New Name)
+    "Dedicated Healer": "💪",     // Study 100
+    "Topic Collector": "🎒",      // Study 250
+    "Syllabus Surveyor": "🗺️",    // Study 500
+    "Compendium Compiler": "📖", // Study 750 (Adjusted)
+    "Knowledge Architect": "🏛️", // Study 1000 (Adjusted)
+    "Scholarly Sage": "🧙",      // Study 1250 (New Tier & Adjusted)
+    "Lore Master": "📜",         // Study 1500 (Adjusted)
+    "All Topics Studied": "💯",   // Study every topic
+
+    // Level Milestones (Unchanged from previous)
     "Clinical Apprentice": "🩺", "Medical Intern": "👨‍⚕️", "Adept Healer": "🧪", "Resident of Remedies": "🏥",
     "Senior Resident": "🧑‍⚕️", "Attending Physician": "👩‍⚕️", "Grand Healer": "🏅", "World-Class Diagnostician": "🔍",
     "Epic Healer": "🔥", "Chief of Medicine": "🥇", "Legendary Scholar": "🏆", "Supreme Healer": "🌟",
@@ -2327,359 +2412,182 @@ const achievementIcons = {
     "Cosmic Physician": "🪐", "Master of the Universe": "🌌", "Dimensional Doctor": "🌀",
     "Celestial Clinician": "✨", "Ascended Healer": "🕊️", "Omni-Level Master": "💯",
 
-    // Question Milestones (Even More Expanded)
+    // Question Milestones (Unchanged from previous)
     "Quiz Knight": "🛡️", "Exam Overcomer": "📖", "Skillful Scholar": "📜", "Marathon of Medicine": "🏃‍♂️",
     "Century of Cures": "🗞️", "Knowledge Seeker": "🧐", "Question Conqueror": "🎯", "Trivia Titan": "🧠",
     "Fact Finder": "🔍", "Endless Learner": "♾️", "Question Accumulator": "📦",
-    "Data Miner": "⛏️", "Query King": "👑", "Infinite Intellect": "🧠",
+    "Data Miner": "⛏️", "Query King": "👑", "Infinite Intellect": "💡",
 
-    // Disease/Topic Studied Milestones (Even More Expanded)
-    "First Study": "✅", "Novice Learner": "🌱", "Knowledge Explorer": "🗺️", "Domain Discoverer": "🔑",
-    "Field Fundamentalist": "🧱", "System Specialist": "⚙️", "Comprehensive Clinician": "📋", "Master of Topics": "🧠",
-    "Encyclopedic Mind": "📖", "Universal Scholar": "🌐", "Topic Hoarder": "📚",
-    "Knowledge Weaver": "🕸️", "Subject Sovereign": "👑", "Omniscient Oracle": "🔮",
-
-    // Review Milestones (Even More Expanded)
+    // Review Milestones (Unchanged from previous)
     "Review Rookie": "🧐", "Review Enthusiast": "🤓", "Review Veteran": "🧐", "Review Virtuoso": "🧑‍🏫",
     "Review Legend": "👑", "Memory Master": "🧠", "Recall Champion": "⏱️", "Retention Rockstar": "🎸",
     "Spaced Repetition Sage": "📅", "Eternal Reviewer": "🔄", "Review Addict": "🔁",
-    "Recall King": "👑", "Memory Monarch": "🏰", "Infinite Retention": "♾️",
+    "Recall King": "👑", "Memory Monarch": "🏰", "Infinite Retention": "♾️", "Review Grandmaster": "🎓",
 
-    // Streak Milestones (Even More Expanded)
+    // Streak Milestones (Unchanged from previous)
     "Streak Starter": "🔥", "Streak Master": "🏹", "Dedicated Disciple": "🗓️", "Daily Devotee": "🔥",
     "Centennial Streak": "💯", "Bicentennial Believer": "🕊️", "Annual Achiever": "📅", "Consistent Contributor": "✅",
-    "Habitual Healer": "🧘", "Unbreakable Streak": "🔗", "Streak Conqueror": "🏆",
-    "Eternal Flame": "🔥", "Daily Ritualist": "🧘", "Streak of Legend": "📜",
+    "Habitual Healer": "🧘", "Unbreakable Streak": "🔗", "Streak Conqueror": "🏆", "Eternal Flame": "🔥",
+    "Daily Ritualist": "🧘", "Streak of Legend": "📜", "Streak Immortal": "♾️",
 
-    // Skill Milestones (Even More Expanded)
-    "Skill Dabbler": "✨", "Skill Master": "🌟", "Review Adept": "🧐", "Recall Expert": "⏱️",
-    "Burst Believer": "💥", "Efficient Expert": "⚡", "Peak Performance": "🚀", "True Potential": "🌌",
-    "Skill Sovereign": "👑", "Total Skill Enthusiast": "➕", "Skill Collector": "💎", "Master of Many Skills": "🏆",
-    "Ultimate Skill Mastery": "💯", "Skill Grandmaster": "👑", "Skill Omniscient": "🌌",
-    "XP Boost Master": "⬆️", "Review Mastery Master": "🧠", "Accelerated Recall Master": "⏱️",
-    "Study Burst Master": "💥", "Efficient Learner Master": "⚡",
+    // Skill Milestones (Unchanged from previous)
+    "First SP Spent": "✨", "Skill Master": "🌟", "Review Adept": "🧐", "Recall Expert": "⏱️",
+    "Burst Believer": "💥", "Efficient Expert": "⚡", "Peak Performance": "🚀", "Total Skill Enthusiast": "➕",
+    "Skill Collector": "💎", "Master of Many Skills": "🏆", "Ultimate Skill Mastery": "💯",
+    "Skill Grandmaster": "👑", "Skill Omniscient": "🌌", "Skill Sage": "🧙", "XP Boost Master": "⬆️",
+    "Review Mastery Master": "🧠", "Accelerated Recall Master": "⏱️", "Study Burst Master": "💥",
+    "Efficient Learner Master": "⚡", "All Skills Maxed": "🏅",
 
-    // Specialty Mastery (Specific Specialties - same as v2, add new ones if any were added)
+    // Specialty Mastery (Specific Specialties - Unchanged from previous)
     "Anatomy Expert": "🦴", "Physiology Pro": "🏃‍♀️", "Biochem Buff": "🧪", "Micro Mastermind": "🦠",
     "Pharm Fanatic": "💊", "Pathology Pioneer": "🔬", "ER Enthusiast": "🚑", "Surgical Samurai": "⚔️",
     "OB/GYN Oracle": "🤰", "Psychiatry Prodigy": "🧠", "Dermatology Dynamo": "💅", "Radiology Rockstar": "🩻",
     "Cardiology Conqueror": "❤️", "Pulmonology Pro": "🫁", "GI Guru": "🍎", "Nephron Master": "🧪",
     "Endocrine Expert": "🧬", "Neurology Ninja": "🧠", "Anesthesia Ace": "💉", "Genetics Genius": "🧬",
     "Infectious Intellect": "🦠", "Rheum Ruler": "🦾", "Heme/Onc Hero": "🎗️", "Ortho Overlord": "🦴",
-    "Urology Virtuoso": "💧", "Ophthalmology Oracle": "👁️", "ENT Expert": "👂", "PM&R Pro": "🏃‍♀️",
+    "Urology Virtuoso": "💧", "Ophthalmology Oracle": "👁️", "ENT Expert": "👂", "PM&R Pro": "♿",
     "Prev Med Pro": "⚕️", "Allergy Alleviator": "🤧", "Geriatric Guru": "👵", "Palliative Pro": "🕊️",
     "Ethics Expert": "⚖️", "Critical Care Commander": "🚨", "Global Health Guru": "🌍", "Medical Educator": "🎓",
-    "Advanced IM Master": "Master the Internal Medicine (Advanced) specialty.",
-    "Advanced Cardio Master": "Master the Cardiology (Advanced) specialty.",
-    "Advanced Heme/Onc Master": "Master the Hematology/Oncology (Advanced) specialty.",
-    "Advanced Neuro Master": "Master the Neurology (Advanced) specialty.",
+    "Advanced IM Master": "🏥", "Advanced Cardio Master": "💖", "Advanced Heme/Onc Master": "🩸", "Advanced Neuro Master": "💡",
 
-    // Specialty Mastery (Tiered - based on number of specialties mastered)
-    "Specialty Explorer": "Master 3 different specialties.",
-    "Specialty Collector": "Master 5 different specialties.",
-    "Specialty Aficionado": "Master 10 different specialties.",
-    "Specialty Connoisseur": "Master 15 different specialties.",
-    "Specialty Master": "Master 20 different specialties.",
-    "Specialty Grandmaster": "Master 25 different specialties.",
-    "Specialty Omniscient": "Master 30 different specialties.",
-    "Specialty Polymath": "Master 35 different specialties.",
-    "Specialty Sovereign": "Master 40 different specialties.",
+    // Specialty Mastery (Tiered - Unchanged from previous)
+    "Specialty Explorer": "🧭", "Specialty Collector": "🎒", "Specialty Aficionado": "🧐",
+    "Specialty Connoisseur": "🧐", "Specialty Master": "⭐", "Specialty Grandmaster": "🌟",
+    "Specialty Omniscient": "✨", "Specialty Polymath": "🧠", "Specialty Sovereign": "👑",
+    "Specialty Legend": "🏆", "Specialty Divine": "🌌", "All Specialties Unlocked": "🗝️",
 
-    // Combination Mastery (New!)
-    "Foundational Five": "Master Anatomy, Physiology, Biochemistry, Microbiology, and Pharmacology.",
-    "Core Clinical Quartet": "Master Internal Medicine, Pediatrics, Emergency Medicine, and General Surgery.",
-    "Organ System Savant": "Master all major organ system specialties (Cardio, Pulm, GI, Nephro, Endo, Neuro).",
-    "Surgical Suite Star": "Master General Surgery, Orthopedics, and Urology.",
-    "Sensory Specialists": "Master Ophthalmology and Otolaryngology (ENT).",
-    "Mind & Body Master": "Master Psychiatry and Physical Medicine & Rehabilitation (PM&R).",
-    "Infection Fighter": "Master Microbiology and Infectious Diseases.",
-    "Cancer Crusader": "Master Hematology/Oncology and Pathology.",
-    "Autoimmune Authority": "Master Rheumatology and Allergy & Immunology.",
-    "High-Level Harmonizer": "Master Critical Care Medicine, Palliative Care, and Medical Ethics.",
+    // Combination Mastery (Unchanged from previous)
+    "Foundational Five": "🧱", "Core Clinical Quartet": "🩺", "Organ System Savant": "⚙️",
+    "Surgical Suite Star": "🔪", "Sensory Specialists": "👀", "Mind & Body Master": "🧘",
+    "Infection Fighter": "🛡️", "Cancer Crusader": "🦀", "Autoimmune Authority": "🛡️",
+    "High-Level Harmonizer": "⚖️", "Advanced Integrator": "🔗", "Global Guru": "🌐",
+    "Foundational Master": "🏛️",
 
-    // Daily Task Achievements (Expanded)
-    "Task Taker": "Complete your first Daily Task.",
-    "Task Completer": "Complete 5 Daily Tasks.",
-    "Daily Task Master": "Complete all Daily Tasks in a single day.",
-    "Consistent Tasker": "Complete all Daily Tasks for 3 consecutive days.",
-    "Task Champion": "Complete 25 Daily Tasks.",
-    "Daily Duty": "Complete 100 Daily Tasks.",
-    "Task Veteran": "Complete 250 Daily Tasks.",
-    "Task Grandmaster": "Complete 500 Daily Tasks.",
-    "Perfect Week": "Complete all Daily Tasks for 7 consecutive days.",
-    "Perfect Month": "Complete all Daily Tasks for 30 consecutive days.",
+    // Daily Task Achievements (Unchanged from previous)
+    "Task Taker": "✅", "Task Completer": "☑️", "Daily Task Master": "🎯", "Consistent Tasker": "🗓️",
+    "Task Champion": "🏅", "Daily Duty": "💯", "Task Veteran": "🎖️", "Task Grandmaster": "🏆",
+    "Perfect Week": "📅", "Perfect Month": "🗓️", "Task Streak": "🔥", "Task Legend": "👑",
 
-    // Review Efficiency / Streak (New!)
-    "Perfect Review": "Complete a review exactly on the day it is due.",
-    "Review Streak Starter": "Complete at least one review for 3 consecutive days.",
-    "Review Streak Master": "Complete at least one review for 7 consecutive days.",
-    "Review Streak Addict": "Complete at least one review for 30 consecutive days.",
-    "Flawless Recall": "Successfully complete 10 consecutive reviews without missing their due dates.",
-    "Master Reviewer": "Successfully complete 50 consecutive reviews without missing their due dates.",
+    // Review Efficiency / Streak (Unchanged from previous)
+    "Perfect Review": "✔️", "Review Streak Starter": "🔥", "Review Streak Master": "🔥", "Review Streak Addict": "🔥",
+    "Flawless Recall": "🎯", "Master Reviewer": "🎯", "Perfect Streak": "💯", "Review Marathon": "🏃",
+    "Review Spree": "💨", "Review Blitz": "⚡", "Review Due Flood": "🌊", "Empty Review List": "🧹",
 
-    // Other Milestones / Challenges (Expanded)
-    "Boss Slayer": "Face your first Boss Battle (Level Milestone).",
-    "Music Lover": "Toggle the background music on.",
-    "Theme Thinker": "Change the light/dark theme.",
-    "Data Exporter": "Export your save data.",
-    "Data Importer": "Import save data.",
-    "Fresh Start": "Use the reset feature.",
-    "XP Spurt": "Gain 1000 XP from a single action (e.g., studying many topics at once).", // Example, adjust value
-    "Level Skip": "Gain enough XP from a single action to level up multiple times.",
-    "Skill Point Hoarder": "Accumulate 50 unspent Skill Points.", // Example, adjust value
-    "Maxed Out Skill": "Reach the maximum level in any skill.", // Overlap with Peak Performance, but can be a separate trigger
-    "All Skills Maxed": "Reach the maximum level in all available skills.", // New ultimate skill goal
-    "XP Overload": "Gain XP when your XP bar is already full (before leveling up).",
-    "Review Due Flood": "Have 10 or more reviews due at the same time.", // Encourages managing reviews
-    "Empty Review List": "Clear all currently due reviews.", // Rewards review completion
-    "Ultimate Completionist": "Unlock every other achievement.", // The final goal!
+    // Other Milestones / Challenges (Unchanged from previous)
+    "Boss Slayer": "⚔️", "Music Lover": "🎵", "Theme Thinker": "🎨", "Data Exporter": "📤",
+    "Data Importer": "📥", "Fresh Start": "🔄", "XP Spurt": "🚀", "Level Skip": "🚀",
+    "Skill Point Hoarder": "💰", "Maxed Out Skill": "⭐", "XP Overload": "📈", "Ultimate Completionist": "🏁",
+    "Stat Checker": "📊", "Tinkerer": "⚙️", "Archivist": "💾", "Burst User": "💥"
 };
 
+// Object mapping achievement names to their descriptions (NOW COMPLETE)
 const achievementDescriptions = {
-    // Core Progression (Higher Tiers)
+    // Core Progression (Disease Study - REVISED Tiers & Names)
     "First Blood": "Study your first disease or topic.",
     "Novice Diagnostician": "Study 5 different diseases or topics.",
     "Persistent Scholar": "Study 25 different diseases or topics.",
-    "Dedicated Healer": "Study 100 different diseases or topics.",
-    "Apprentice Healer": "Study 250 different diseases or topics.",
-    "Cure Connoisseur": "Study 500 different diseases or topics.",
-    "Medical Polymath": "Study 1000 different diseases or topics.",
-    "Grandmaster Physician": "Study 2500 different diseases or topics.",
-    "Medical Omniscient": "Study 5000 different diseases or topics.",
-    "Universal Healer": "Study 7500 different diseases or topics.",
-    "Cosmic Clinician": "Study 10,000 different diseases or topics.",
-    "Master of Reality": "Study 15,000 different diseases or topics.", // Example higher tier
-
-    // Level Milestones (Even More Expanded)
-    "Clinical Apprentice": "Reach Level 2.",
-    "Medical Intern": "Reach Level 3.",
-    "Adept Healer": "Reach Level 5.",
-    "Resident of Remedies": "Reach Level 8.",
-    "Senior Resident": "Reach Level 12.",
-    "Attending Physician": "Reach Level 15.",
-    "Grand Healer": "Reach Level 20.",
-    "World-Class Diagnostician": "Reach Level 25.",
-    "Epic Healer": "Reach Level 30.",
-    "Chief of Medicine": "Reach Level 35.",
-    "Legendary Scholar": "Reach Level 40.",
-    "Supreme Healer": "Reach Level 45.",
-    "Mythical Medic": "Reach Level 50.",
-    "Timeless Scholar": "Reach Level 60.",
-    "Divine Insight": "Reach Level 75.",
-    "Transcendent Healer": "Reach Level 90.",
-    "Cosmic Physician": "Reach Level 100.",
-    "Master of the Universe": "Reach Level 150.",
-    "Dimensional Doctor": "Reach Level 200.", // Example higher tier
-    "Celestial Clinician": "Reach Level 250.",
-    "Ascended Healer": "Reach Level 300.",
-    "Omni-Level Master": "Reach Level 500.", // Example extreme tier
-
-    // Question Milestones (Even More Expanded)
-    "Quiz Knight": "Answer 50 questions.",
-    "Exam Overcomer": "Answer 200 questions.",
-    "Skillful Scholar": "Answer 500 questions.",
-    "Marathon of Medicine": "Answer 1000 questions.",
-    "Century of Cures": "Answer 2000 questions.",
-    "Knowledge Seeker": "Answer 5000 questions.",
-    "Question Conqueror": "Answer 10,000 questions.",
-    "Trivia Titan": "Answer 25,000 questions.",
-    "Fact Finder": "Answer 50,000 questions.",
-    "Endless Learner": "Answer 100,000 questions.",
-    "Question Accumulator": "Answer 250,000 questions.",
-    "Data Miner": "Answer 500,000 questions.",
-    "Query King": "Answer 1,000,000 questions.", // Example extreme tier
-    "Infinite Intellect": "Answer 2,500,000 questions.",
-
-    // Disease/Topic Studied Milestones (Even More Expanded)
-    "First Study": "Study your first disease or topic.",
-    "Novice Learner": "Study 5 different diseases or topics.",
-    "Knowledge Explorer": "Study 25 different diseases or topics.",
     "Domain Discoverer": "Study 50 different diseases or topics.",
-    "Field Fundamentalist": "Study 100 different diseases or topics.",
-    "System Specialist": "Study 250 different diseases or topics.",
-    "Comprehensive Clinician": "Study 500 different diseases or topics.",
-    "Master of Topics": "Study 1000 different diseases or topics.",
-    "Encyclopedic Mind": "Study 2500 different diseases or topics.",
-    "Universal Scholar": "Study 5000 different diseases or topics.",
-    "Topic Hoarder": "Study 7500 different diseases or topics.",
-    "Knowledge Weaver": "Study 10,000 different diseases or topics.",
-    "Subject Sovereign": "Study 15,000 different diseases or topics.", // Example higher tier
-    "Omniscient Oracle": "Study 20,000 different diseases or topics.",
+    "Dedicated Healer": "Study 100 different diseases or topics.",
+    "Topic Collector": "Study 250 different diseases or topics.",
+    "Syllabus Surveyor": "Study 500 different diseases or topics.",
+    "Compendium Compiler": "Study 750 different diseases or topics.",
+    "Knowledge Architect": "Study 1000 different diseases or topics.",
+    "Scholarly Sage": "Study 1250 different diseases or topics.",
+    "Lore Master": "Study 1500 different diseases or topics.",
+    "All Topics Studied": "Study every single topic in the game.",
+    "Omniscient Oracle": "Study 20,000 different diseases or topics.", // Kept high one just in case
 
-    // Review Milestones (Even More Expanded)
-    "Review Rookie": "Complete your first review.",
-    "Review Enthusiast": "Complete 10 reviews.",
-    "Review Veteran": "Complete 50 reviews.",
-    "Review Virtuoso": "Complete 100 reviews.",
-    "Review Legend": "Complete 200 reviews.",
-    "Memory Master": "Complete 500 reviews.",
-    "Recall Champion": "Complete 1000 reviews.",
-    "Retention Rockstar": "Complete 2500 reviews.",
-    "Spaced Repetition Sage": "Complete 5000 reviews.",
-    "Eternal Reviewer": "Complete 10,000 reviews.",
-    "Review Addict": "Complete 15,000 reviews.",
-    "Recall King": "Complete 20,000 reviews.",
-    "Memory Monarch": "Complete 25,000 reviews.", // Example higher tier
-    "Infinite Retention": "Complete 50,000 reviews.",
+    // Level Milestones (Unchanged from previous)
+    "Clinical Apprentice": "Reach Level 2.", "Medical Intern": "Reach Level 3.", "Adept Healer": "Reach Level 5.",
+    "Resident of Remedies": "Reach Level 8.", "Senior Resident": "Reach Level 12.", "Attending Physician": "Reach Level 15.",
+    "Grand Healer": "Reach Level 20.", "World-Class Diagnostician": "Reach Level 25.", "Epic Healer": "Reach Level 30.",
+    "Chief of Medicine": "Reach Level 35.", "Legendary Scholar": "Reach Level 40.", "Supreme Healer": "Reach Level 45.",
+    "Mythical Medic": "Reach Level 50.", "Timeless Scholar": "Reach Level 60.", "Divine Insight": "Reach Level 75.",
+    "Transcendent Healer": "Reach Level 90.", "Cosmic Physician": "Reach Level 100.", "Master of the Universe": "Reach Level 150.",
+    "Dimensional Doctor": "Reach Level 200.", "Celestial Clinician": "Reach Level 250.", "Ascended Healer": "Reach Level 300.",
+    "Omni-Level Master": "Reach Level 500.",
 
-    // Streak Milestones (Even More Expanded)
-    "Streak Starter": "Achieve a 1-day study streak (Log in!).",
-    "Streak Master": "Achieve a 7-day study streak.",
-    "Dedicated Disciple": "Achieve a 14-day study streak.",
-    "Daily Devotee": "Achieve a 30-day study streak.",
-    "Centennial Streak": "Achieve a 100-day study streak.",
-    "Bicentennial Believer": "Achieve a 200-day study streak.",
-    "Annual Achiever": "Achieve a 365-day study streak.",
-    "Consistent Contributor": "Achieve a 500-day study streak.",
-    "Habitual Healer": "Achieve a 750-day study streak.",
-    "Unbreakable Streak": "Achieve a 1000-day study streak.",
-    "Streak Conqueror": "Achieve a 1500-day study streak.",
-    "Eternal Flame": "Achieve a 2000-day study streak.",
-    "Daily Ritualist": "Achieve a 2500-day study streak.",
-    "Streak of Legend": "Achieve a 3000-day study streak.", // Example extreme tier
+    // Question Milestones (Unchanged from previous)
+    "Quiz Knight": "Answer 50 questions.", "Exam Overcomer": "Answer 200 questions.", "Skillful Scholar": "Answer 500 questions.",
+    "Marathon of Medicine": "Answer 1000 questions.", "Century of Cures": "Answer 2000 questions.", "Knowledge Seeker": "Answer 5000 questions.",
+    "Question Conqueror": "Answer 10,000 questions.", "Trivia Titan": "Answer 25,000 questions.", "Fact Finder": "Answer 50,000 questions.",
+    "Endless Learner": "Answer 100,000 questions.", "Question Accumulator": "Answer 250,000 questions.", "Data Miner": "Answer 500,000 questions.",
+    "Query King": "Answer 1,000,000 questions.", "Infinite Intellect": "Answer 2,500,000 questions.",
 
-    // Skill Milestones (Even More Expanded)
-    "Skill Dabbler": "Spend your first Skill Point.",
-    "Skill Master": "Reach Level 5 in any single skill.",
-    "Review Adept": "Upgrade the 'Review Mastery' skill at least once.",
-    "Recall Expert": "Upgrade the 'Accelerated Recall' skill at least once.",
-    "Burst Believer": "Upgrade the 'Study Burst' skill at least once.",
-    "Efficient Expert": "Upgrade the 'Efficient Learner' skill at least once.",
-    "Peak Performance": "Reach Level 10 (Max) in any skill.", // Assuming max is 10 for now
-    "Total Skill Enthusiast": "Reach a total of 10 skill levels across all skills.",
-    "Skill Collector": "Reach a total of 25 skill levels across all skills.",
-    "Master of Many Skills": "Reach a total of 50 skill levels across all skills.",
-    "Ultimate Skill Mastery": "Reach a total of 100 skill levels across all skills.",
-    "Skill Grandmaster": "Reach a total of 150 skill levels across all skills.",
-    "Skill Omniscient": "Reach a total of 200 skill levels across all skills.", // Example higher tier
-    "XP Boost Master": "Reach the maximum level in the 'XP Boost' skill.",
-    "Review Mastery Master": "Reach the maximum level in the 'Review Mastery' skill.",
-    "Accelerated Recall Master": "Reach the maximum level in the 'Accelerated Recall' skill.",
-    "Study Burst Master": "Reach the maximum level in the 'Study Burst' skill.",
-    "Efficient Learner Master": "Reach the maximum level in the 'Efficient Learner' skill.",
-    "All Skills Maxed": "Reach the maximum level in all available skills.", // New ultimate skill goal
+    // Review Milestones (Unchanged from previous)
+    "Review Rookie": "Complete your first review.", "Review Enthusiast": "Complete 10 reviews.", "Review Veteran": "Complete 50 reviews.",
+    "Review Virtuoso": "Complete 100 reviews.", "Review Legend": "Complete 200 reviews.", "Memory Master": "Complete 500 reviews.",
+    "Recall Champion": "Complete 1000 reviews.", "Retention Rockstar": "Complete 2500 reviews.", "Spaced Repetition Sage": "Complete 5000 reviews.",
+    "Eternal Reviewer": "Complete 10,000 reviews.", "Review Addict": "Complete 15,000 reviews.", "Recall King": "Complete 20,000 reviews.",
+    "Memory Monarch": "Complete 25,000 reviews.", "Infinite Retention": "Complete 50,000 reviews.", "Review Grandmaster": "Complete 7500 reviews.",
 
-    // Specialty Mastery (Specific Specialties - same as v2, add new ones if any were added)
-    "Anatomy Expert": "Master the Anatomy specialty.",
-    "Physiology Pro": "Master the Physiology specialty.",
-    "Biochem Buff": "Master the Biochemistry specialty.",
-    "Micro Mastermind": "Master the Microbiology specialty.",
-    "Pharm Fanatic": "Master the Pharmacology specialty.",
-    "Pathology Pioneer": "Master the Pathology specialty.",
-    "ER Enthusiast": "Master the Emergency Medicine specialty.",
-    "Surgical Samurai": "Master the General Surgery specialty.",
-    "OB/GYN Oracle": "Master the Obstetrics & Gynecology specialty.",
-    "Psychiatry Prodigy": "Master the Psychiatry specialty.",
-    "Dermatology Dynamo": "Master the Dermatology specialty.",
-    "Radiology Rockstar": "Master the Radiology specialty.",
-    "Cardiology Conqueror": "Master the Cardiology specialty.",
-    "Pulmonology Pro": "Master the Pulmonology specialty.",
-    "GI Guru": "Master the Gastroenterology specialty.",
-    "Nephron Master": "Master the Nephrology specialty.",
-    "Endocrine Expert": "Master the Endocrinology specialty.",
-    "Neurology Ninja": "Master the Neurology specialty.",
-    "Anesthesia Ace": "Master the Anesthesiology specialty.",
-    "Genetics Genius": "Master the Genetics specialty.",
-    "Infectious Intellect": "Master the Infectious Diseases specialty.",
-    "Rheum Ruler": "Master the Rheumatology specialty.",
-    "Heme/Onc Hero": "Master the Hematology/Oncology specialty.",
-    "Ortho Overlord": "Master the Orthopedics specialty.",
-    "Urology Virtuoso": "Master the Urology specialty.",
-    "Ophthalmology Oracle": "Master the Ophthalmology specialty.",
-    "ENT Expert": "Master the Otolaryngology (ENT) specialty.",
-    "PM&R Pro": "Master the Physical Medicine & Rehabilitation specialty.",
-    "Prev Med Pro": "Master the Preventive Medicine specialty.",
-    "Allergy Alleviator": "Master the Allergy & Immunology specialty.",
-    "Geriatric Guru": "Master the Geriatrics specialty.",
-    "Palliative Pro": "Master the Palliative Care specialty.",
-    "Ethics Expert": "Master the Medical Ethics specialty.",
-    "Critical Care Commander": "Master the Critical Care Medicine specialty.",
-    "Global Health Guru": "Master the Global Health specialty.",
-    "Medical Educator": "Master the Medical Education specialty.",
-    "Advanced IM Master": "Master the Internal Medicine (Advanced) specialty.",
-    "Advanced Cardio Master": "Master the Cardiology (Advanced) specialty.",
-    "Advanced Heme/Onc Master": "Master the Hematology/Oncology (Advanced) specialty.",
+    // Streak Milestones (Unchanged from previous)
+    "Streak Starter": "Achieve a 1-day study streak (Log in!).", "Streak Master": "Achieve a 7-day study streak.", "Dedicated Disciple": "Achieve a 14-day study streak.",
+    "Daily Devotee": "Achieve a 30-day study streak.", "Centennial Streak": "Achieve a 100-day study streak.", "Bicentennial Believer": "Achieve a 200-day study streak.",
+    "Annual Achiever": "Achieve a 365-day study streak.", "Consistent Contributor": "Achieve a 500-day study streak.", "Habitual Healer": "Achieve a 750-day study streak.",
+    "Unbreakable Streak": "Achieve a 1000-day study streak.", "Streak Conqueror": "Achieve a 1250-day study streak.", "Streak Immortal": "Achieve a 1500-day study streak.",
+    "Eternal Flame": "Achieve a 2000-day study streak.", "Daily Ritualist": "Achieve a 2500-day study streak.", "Streak of Legend": "Achieve a 3000-day study streak.",
+
+    // Skill Milestones (Unchanged from previous)
+    "First SP Spent": "Spend your first Skill Point.", "Skill Master": "Reach Level 5 in any single skill.", "Review Adept": "Upgrade the 'Review Mastery' skill at least once.",
+    "Recall Expert": "Upgrade the 'Accelerated Recall' skill at least once.", "Burst Believer": "Upgrade the 'Study Burst' skill at least once.", "Efficient Expert": "Upgrade the 'Efficient Learner' skill at least once.",
+    "Peak Performance": "Reach Level 10 (Max) in any skill.", "Total Skill Enthusiast": "Reach a total of 10 skill levels across all skills.", "Skill Collector": "Reach a total of 25 skill levels across all skills.",
+    "Master of Many Skills": "Reach a total of 50 skill levels across all skills.", "Ultimate Skill Mastery": "Reach a total of 100 skill levels across all skills.", "Skill Grandmaster": "Reach a total of 150 skill levels across all skills.",
+    "Skill Omniscient": "Reach a total of 200 skill levels across all skills.", "Skill Sage": "Reach a total of 250 skill levels across all skills.", "XP Boost Master": "Reach the maximum level in the 'XP Boost' skill.",
+    "Review Mastery Master": "Reach the maximum level in the 'Review Mastery' skill.", "Accelerated Recall Master": "Reach the maximum level in the 'Accelerated Recall' skill.", "Study Burst Master": "Reach the maximum level in the 'Study Burst' skill.",
+    "Efficient Learner Master": "Reach the maximum level in the 'Efficient Learner' skill.", "All Skills Maxed": "Reach the maximum level in all available skills.",
+
+    // Specialty Mastery (Specific Specialties - Unchanged from previous)
+    "Anatomy Expert": "Master the Anatomy specialty.", "Physiology Pro": "Master the Physiology specialty.", "Biochem Buff": "Master the Biochemistry specialty.",
+    "Micro Mastermind": "Master the Microbiology specialty.", "Pharm Fanatic": "Master the Pharmacology specialty.", "Pathology Pioneer": "Master the Pathology specialty.",
+    "ER Enthusiast": "Master the Emergency Medicine specialty.", "Surgical Samurai": "Master the General Surgery specialty.", "OB/GYN Oracle": "Master the Obstetrics & Gynecology specialty.",
+    "Psychiatry Prodigy": "Master the Psychiatry specialty.", "Dermatology Dynamo": "Master the Dermatology specialty.", "Radiology Rockstar": "Master the Radiology specialty.",
+    "Cardiology Conqueror": "Master the Cardiology specialty.", "Pulmonology Pro": "Master the Pulmonology specialty.", "GI Guru": "Master the Gastroenterology specialty.",
+    "Nephron Master": "Master the Nephrology specialty.", "Endocrine Expert": "Master the Endocrinology specialty.", "Neurology Ninja": "Master the Neurology specialty.",
+    "Anesthesia Ace": "Master the Anesthesiology specialty.", "Genetics Genius": "Master the Genetics specialty.", "Infectious Intellect": "Master the Infectious Diseases specialty.",
+    "Rheum Ruler": "Master the Rheumatology specialty.", "Heme/Onc Hero": "Master the Hematology/Oncology specialty.", "Ortho Overlord": "Master the Orthopedics specialty.",
+    "Urology Virtuoso": "Master the Urology specialty.", "Ophthalmology Oracle": "Master the Ophthalmology specialty.", "ENT Expert": "Master the Otolaryngology (ENT) specialty.",
+    "PM&R Pro": "Master the Physical Medicine & Rehabilitation specialty.", "Prev Med Pro": "Master the Preventive Medicine specialty.", "Allergy Alleviator": "Master the Allergy & Immunology specialty.",
+    "Geriatric Guru": "Master the Geriatrics specialty.", "Palliative Pro": "Master the Palliative Care specialty.", "Ethics Expert": "Master the Medical Ethics specialty.",
+    "Critical Care Commander": "Master the Critical Care Medicine specialty.", "Global Health Guru": "Master the Global Health specialty.", "Medical Educator": "Master the Medical Education specialty.",
+    "Advanced IM Master": "Master the Internal Medicine (Advanced) specialty.", "Advanced Cardio Master": "Master the Cardiology (Advanced) specialty.", "Advanced Heme/Onc Master": "Master the Hematology/Oncology (Advanced) specialty.",
     "Advanced Neuro Master": "Master the Neurology (Advanced) specialty.",
 
-    // Specialty Mastery (Tiered - based on number of specialties mastered)
-    "Specialty Explorer": "Master 3 different specialties.",
-    "Specialty Collector": "Master 5 different specialties.",
-    "Specialty Aficionado": "Master 10 different specialties.",
-    "Specialty Connoisseur": "Master 15 different specialties.",
-    "Specialty Master": "Master 20 different specialties.",
-    "Specialty Grandmaster": "Master 25 different specialties.",
-    "Specialty Omniscient": "Master 30 different specialties.",
-    "Specialty Polymath": "Master 35 different specialties.",
-    "Specialty Sovereign": "Master 40 different specialties.",
-    "Specialty Legend": "Master 45 different specialties.", // Example higher tier
-    "Specialty Divine": "Master 50 different specialties.",
+    // Specialty Mastery (Tiered - Unchanged from previous)
+    "Specialty Explorer": "Master 3 different specialties.", "Specialty Collector": "Master 5 different specialties.", "Specialty Aficionado": "Master 10 different specialties.",
+    "Specialty Connoisseur": "Master 15 different specialties.", "Specialty Master": "Master 20 different specialties.", "Specialty Grandmaster": "Master 25 different specialties.",
+    "Specialty Omniscient": "Master 30 different specialties.", "Specialty Polymath": "Master 35 different specialties.", "Specialty Sovereign": "Master 40 different specialties.",
+    "Specialty Legend": "Master 45 different specialties.", "Specialty Divine": "Master 50 different specialties.", "All Specialties Unlocked": "Reach the level required to unlock every specialty.",
 
-    // Combination Mastery (New!)
-    "Foundational Five": "Master Anatomy, Physiology, Biochemistry, Microbiology, and Pharmacology.",
-    "Core Clinical Quartet": "Master Internal Medicine, Pediatrics, Emergency Medicine, and General Surgery.",
-    "Organ System Savant": "Master all major organ system specialties (Cardiology, Pulmonology, Gastroenterology, Nephrology, Endocrinology, Neurology).",
-    "Surgical Suite Star": "Master General Surgery, Orthopedics, and Urology.",
-    "Sensory Specialists": "Master Ophthalmology and Otolaryngology (ENT).",
-    "Mind & Body Master": "Master Psychiatry and Physical Medicine & Rehabilitation (PM&R).",
-    "Infection Fighter": "Master Microbiology and Infectious Diseases.",
-    "Cancer Crusader": "Master Hematology/Oncology and Pathology.",
-    "Autoimmune Authority": "Master Rheumatology and Allergy & Immunology.",
-    "High-Level Harmonizer": "Master Critical Care Medicine, Palliative Care, and Medical Ethics.",
-    "Advanced Integrator": "Master all 'Advanced' specialties (Internal Medicine, Cardiology, Heme/Onc, Neurology).",
-    "Global Guru": "Master Global Health and Preventive Medicine.",
-    "Foundational Master": "Master all Level 1-3 foundational sciences.", // More specific than Foundational Five
+    // Combination Mastery (Unchanged from previous)
+    "Foundational Five": "Master Anatomy, Physiology, Biochemistry, Microbiology, and Pharmacology.", "Core Clinical Quartet": "Master Internal Medicine, Pediatrics, Emergency Medicine, and General Surgery.",
+    "Organ System Savant": "Master all major organ system specialties (Cardiology, Pulmonology, Gastroenterology, Nephrology, Endocrinology, Neurology).", "Surgical Suite Star": "Master General Surgery, Orthopedics, and Urology.",
+    "Sensory Specialists": "Master Ophthalmology and Otolaryngology (ENT).", "Mind & Body Master": "Master Psychiatry and Physical Medicine & Rehabilitation (PM&R).", "Infection Fighter": "Master Microbiology and Infectious Diseases.",
+    "Cancer Crusader": "Master Hematology/Oncology and Pathology.", "Autoimmune Authority": "Master Rheumatology and Allergy & Immunology.", "High-Level Harmonizer": "Master Critical Care Medicine, Palliative Care, and Medical Ethics.",
+    "Advanced Integrator": "Master all 'Advanced' specialties (Internal Medicine, Cardiology, Heme/Onc, Neurology).", "Global Guru": "Master Global Health and Preventive Medicine.", "Foundational Master": "Master all Level 1-3 foundational sciences.",
 
-    // Daily Task Achievements (Expanded)
-    "Task Taker": "Complete your first Daily Task.",
-    "Task Completer": "Complete 5 Daily Tasks.",
-    "Daily Task Master": "Complete all Daily Tasks in a single day.",
-    "Consistent Tasker": "Complete all Daily Tasks for 3 consecutive days.",
-    "Task Champion": "Complete 25 Daily Tasks.",
-    "Daily Duty": "Complete 100 Daily Tasks.",
-    "Task Veteran": "Complete 250 Daily Tasks.",
-    "Task Grandmaster": "Complete 500 Daily Tasks.",
-    "Perfect Week": "Complete all Daily Tasks for 7 consecutive days.",
-    "Perfect Month": "Complete all Daily Tasks for 30 consecutive days.",
-    "Task Streak": "Complete all Daily Tasks for 60 consecutive days.",
-    "Task Legend": "Complete all Daily Tasks for 100 consecutive days.",
+    // Daily Task Achievements (Unchanged from previous)
+    "Task Taker": "Complete your first Daily Task.", "Task Completer": "Complete 5 Daily Tasks.", "Daily Task Master": "Complete all Daily Tasks in a single day.",
+    "Consistent Tasker": "Complete all Daily Tasks for 3 consecutive days.", "Task Champion": "Complete 25 Daily Tasks.", "Daily Duty": "Complete 100 Daily Tasks.",
+    "Task Veteran": "Complete 250 Daily Tasks.", "Task Grandmaster": "Complete 500 Daily Tasks.", "Perfect Week": "Complete all Daily Tasks for 7 consecutive days.",
+    "Perfect Month": "Complete all Daily Tasks for 30 consecutive days.", "Task Streak": "Complete all Daily Tasks for 60 consecutive days.", "Task Legend": "Complete all Daily Tasks for 100 consecutive days.",
 
-    // Review Efficiency / Streak (New!)
-    "Perfect Review": "Complete a review exactly on the day it is due.",
-    "Review Streak Starter": "Complete at least one review for 3 consecutive days.",
-    "Review Streak Master": "Complete at least one review for 7 consecutive days.",
-    "Review Streak Addict": "Complete at least one review for 30 consecutive days.",
-    "Flawless Recall": "Successfully complete 10 consecutive reviews without missing their due dates.",
-    "Master Reviewer": "Successfully complete 50 consecutive reviews without missing their due dates.",
-    "Perfect Streak": "Successfully complete 100 consecutive reviews without missing their due dates.",
-    "Review Marathon": "Complete 10 reviews in a single day.", // Example, adjust value
-    "Review Spree": "Complete 25 reviews in a single day.", // Example, adjust value
-    "Review Blitz": "Complete 50 reviews in a single day.", // Example, adjust value
-    "Review Due Flood": "Have 10 or more reviews due at the same time.", // Encourages managing reviews
-    "Empty Review List": "Clear all currently due reviews.", // Rewards review completion
+    // Review Efficiency / Streak (Unchanged from previous)
+    "Perfect Review": "Complete a review exactly on the day it is due.", "Review Streak Starter": "Complete at least one review for 3 consecutive days.", "Review Streak Master": "Complete at least one review for 7 consecutive days.",
+    "Review Streak Addict": "Complete at least one review for 30 consecutive days.", "Flawless Recall": "Successfully complete 10 consecutive reviews without missing their due dates.", "Master Reviewer": "Successfully complete 50 consecutive reviews without missing their due dates.",
+    "Perfect Streak": "Successfully complete 100 consecutive reviews without missing their due dates.", "Review Marathon": "Complete 10 reviews in a single day.", "Review Spree": "Complete 25 reviews in a single day.",
+    "Review Blitz": "Complete 50 reviews in a single day.", "Review Due Flood": "Have 10 or more reviews due at the same time.", "Empty Review List": "Clear all currently due reviews.",
 
-    // Other Milestones / Challenges (Expanded)
-    "Boss Slayer": "Face your first Boss Battle (Level Milestone).",
-    "Music Lover": "Toggle the background music on.",
-    "Theme Thinker": "Change the light/dark theme.",
-    "Data Exporter": "Export your save data.",
-    "Data Importer": "Import save data.",
-    "Fresh Start": "Use the reset feature.",
-    "XP Spurt": "Gain 1000 XP from a single action (e.g., studying many topics at once).", // Example, adjust value
-    "Level Skip": "Gain enough XP from a single action to level up multiple times.",
-    "Skill Point Hoarder": "Accumulate 50 unspent Skill Points.", // Example, adjust value
-    "Maxed Out Skill": "Reach the maximum level in any skill.", // Overlap with Peak Performance, but can be a separate trigger
-    "All Skills Maxed": "Reach the maximum level in all available skills.", // New ultimate skill goal
-    "XP Overload": "Gain XP when your XP bar is already full (before leveling up).",
-    "Ultimate Completionist": "Unlock every other achievement.", // The final goal!
-    "First SP Spent": "Spend your first Skill Point.", // Overlap with Skill Dabbler, keep for clarity
-    "All Specialties Unlocked": "Reach the level required to unlock every specialty.", // Rewards reaching a high level
-    "All Topics Studied": "Study every single topic in the game.", // The ultimate learning goal
-    "Review Master": "Reach the final tier in the 'Review Mastery' skill.", // More specific skill achievement
-    "Recall Master": "Reach the final tier in the 'Accelerated Recall' skill.", // More specific skill achievement
-    "Burst Master": "Reach the final tier in the 'Study Burst' skill.", // More specific skill achievement
-    "Efficiency Master": "Reach the final tier in the 'Efficient Learner' skill.", // More specific skill achievement
-    "XP Boost Guru": "Reach the final tier in the 'XP Boost' skill.", // More specific skill achievement
+    // Other Milestones / Challenges (Unchanged from previous)
+    "Boss Slayer": "Face your first Boss Battle (Level Milestone).", "Music Lover": "Toggle the background music on.", "Theme Thinker": "Change the light/dark theme.",
+    "Data Exporter": "Export your save data.", "Data Importer": "Import save data.", "Fresh Start": "Use the reset feature.",
+    "XP Spurt": "Gain 1000 XP from a single action.", "Level Skip": "Gain enough XP from a single action to level up multiple times.", "Skill Point Hoarder": "Accumulate 50 unspent Skill Points.",
+    "Maxed Out Skill": "Reach the maximum level in any skill.", "XP Overload": "Gain XP when your XP bar is already full (before leveling up).", "Ultimate Completionist": "Unlock every other achievement.",
+    "Stat Checker": "View the detailed statistics modal 10 times.", "Tinkerer": "Toggle the light/dark theme 20 times.", "Archivist": "Use the Import/Export function 5 times.",
+    "Burst User": "Use the Study Burst skill for the first time."
 };
+
+
 
 
 
@@ -2837,21 +2745,20 @@ const achievementDescriptions = {
     // --- Main Music Toggle Button Function --- ADDED
     // This is the function called by the event listener at the bottom of the script
     function toggleMusic() {
-        // Check if user interaction likely happened for SFX context
-        if (!sfxAudioInitialized && toneJsLoaded) {
-             console.warn("AUDIO_DEBUG: SFX Audio context not yet initialized. Click screen first.");
-             showNotification("Click screen first to enable audio.", 3000);
-             // Allow the HTML audio toggle to proceed anyway
-         }
-
-        console.log("AUDIO_DEBUG: Calling HTML audio toggle function.");
-        toggleBackgroundMusicHtmlAudio(); // Call the function for the <audio> tag
-
-        // Grant achievement only if playback likely started
-        if (bgmAudioElement && !bgmAudioElement.paused){
-            checkAchievement("Music Lover");
-        }
+    // ADDED LINES: Try to init SFX if not already done
+    if (!sfxAudioInitialized && toneJsLoaded) {
+        initializeSfxAudio(); 
     }
+    // --- The old check block above this line was removed ---
+
+    console.log("AUDIO_DEBUG: Calling HTML audio toggle function.");
+    toggleBackgroundMusicHtmlAudio(); 
+
+    // Grant achievement only if playback likely started
+    if (bgmAudioElement && !bgmAudioElement.paused){
+        checkAchievement("Music Lover");
+    }
+}
 
     // ===== END CORRECTED Audio Handling =====
 
@@ -2866,6 +2773,12 @@ const achievementDescriptions = {
          const day = String(today.getDate()).padStart(2, '0');
          return `${year}-${month}-${day}`;
      }
+function getYearMonthString() {
+     const today = new Date();
+     const year = today.getFullYear();
+     const month = String(today.getMonth() + 1).padStart(2, '0'); // Month is 0-indexed
+     return `${year}-${month}`; // <-- CORRECTED LINE
+ }
     function calculateXpNeededForLevel(level) {
          if (level <= 0) return XP_LEVEL_BASE;
          return XP_LEVEL_BASE * level + XP_LEVEL_QUADRATIC_FACTOR * level * level;
@@ -2996,7 +2909,7 @@ const achievementDescriptions = {
     // ===========================
      function saveProgress() {
          console.log("SAVE_DEBUG: Save progress started.");
-         const data = { xp, level, achievements, studied, totalQuestions, totalReviewsCompleted, questLog, dailyStreak, longestStreak, lastStudyDate, lastStudyBurstDate, skillPoints, skills, totalSkillLevelsPurchased, masteredSpecialtyCount, currentTheme, dailyTasks, lastTasksGeneratedDate };
+         const data = { xp, level, achievements, studied, totalQuestions, totalReviewsCompleted, questLog, dailyStreak, longestStreak, lastStudyDate, lastStudyBurstDate, skillPoints, skills, totalSkillLevelsPurchased, masteredSpecialtyCount, currentTheme, dailyTasks, lastTasksGeneratedDate, monthlyTasks, lastMonthlyTasksGeneratedDate, monthlyTaskProgress };
          try {
              localStorage.setItem(SAVE_KEY, JSON.stringify(data));
              console.log("SAVE_DEBUG: Progress saved successfully to localStorage.");
@@ -3039,7 +2952,15 @@ const achievementDescriptions = {
                  currentTheme = data.currentTheme || 'dark';
                  dailyTasks = data.dailyTasks || [];
                  lastTasksGeneratedDate = data.lastTasksGeneratedDate || null;
-
+monthlyTasks = data.monthlyTasks || [];
+lastMonthlyTasksGeneratedDate = data.lastMonthlyTasksGeneratedDate || null;
+monthlyTaskProgress = data.monthlyTaskProgress || { topicsStudiedThisMonthCount: 0, reviewsCompletedThisMonthCount: 0, questionsAnsweredThisMonthCount: 0, levelsGainedThisMonthCount: 0, levelAtMonthStart: data.level || 1 };
+// Ensure levelAtMonthStart is reasonable if loading old save
+if (!monthlyTaskProgress.levelAtMonthStart && data.level) {
+    monthlyTaskProgress.levelAtMonthStart = data.level;
+} else if (!monthlyTaskProgress.levelAtMonthStart) {
+    monthlyTaskProgress.levelAtMonthStart = 1;
+}
                  console.log("LOAD_DEBUG: Progress loaded successfully.");
 
              } else {
@@ -3051,6 +2972,7 @@ const achievementDescriptions = {
                  skills = { xpBoost: 0, reviewMastery: 0, acceleratedRecall: 0, studyBurst: 0, efficientLearner: 0 };
                  totalSkillLevelsPurchased = 0; masteredSpecialtyCount = 0; currentTheme = 'dark';
                  dailyTasks = []; lastTasksGeneratedDate = null;
+monthlyTasks = []; lastMonthlyTasksGeneratedDate = null; monthlyTaskProgress = { topicsStudiedThisMonthCount: 0, reviewsCompletedThisMonthCount: 0, questionsAnsweredThisMonthCount: 0, levelsGainedThisMonthCount: 0, levelAtMonthStart: 1 };
              }
          } catch (e) {
              console.error("LOAD_DEBUG: Failed to load or parse progress:", e);
@@ -3062,6 +2984,7 @@ const achievementDescriptions = {
              skills = { xpBoost: 0, reviewMastery: 0, acceleratedRecall: 0, studyBurst: 0, efficientLearner: 0 };
              totalSkillLevelsPurchased = 0; masteredSpecialtyCount = 0; currentTheme = 'dark';
              dailyTasks = []; lastTasksGeneratedDate = null;
+monthlyTasks = []; lastMonthlyTasksGeneratedDate = null; monthlyTaskProgress = { topicsStudiedThisMonthCount: 0, reviewsCompletedThisMonthCount: 0, questionsAnsweredThisMonthCount: 0, levelsGainedThisMonthCount: 0, levelAtMonthStart: 1 };
          }
 
          applyTheme(currentTheme);
@@ -3086,6 +3009,7 @@ const achievementDescriptions = {
         if (!isNaN(count) && count > 0) {
             const baseXP = count * XP_PER_QUESTION;
             const gainedXpActual = gainXP(baseXP); // gainXP calls checkLevelUp
+showXpToast(gainedXpActual, 'Questions'); // Show XP toast
             totalQuestions += count;
             addQuest(`Answered ${count} questions (+${gainedXpActual} XP)`);
             questionsInputEl.value = ""; // Clear input
@@ -3093,6 +3017,11 @@ const achievementDescriptions = {
             updateTaskProgress(TASK_TYPES.QUESTIONS, count);
             updateTaskProgress(TASK_TYPES.HARD_QUESTIONS, count);
             checkQuestionAchievements();
+// Monthly Task Update for answering questions
+if (getYearMonthString() === lastMonthlyTasksGeneratedDate) {
+    monthlyTaskProgress.questionsAnsweredThisMonthCount += count;
+    updateActiveMonthlyTasksProgress();
+}
             updateAndSave(); // Update UI and save state
         } else {
             playSound('error');
@@ -3134,11 +3063,21 @@ const achievementDescriptions = {
             updateProfilePicture();
             updateNarrative(`Leveled up to Level ${level}! Your knowledge deepens...`);
 
+// Monthly Task Update for gaining levels
+if (getYearMonthString() === lastMonthlyTasksGeneratedDate) {
+    if (level > monthlyTaskProgress.levelAtMonthStart) { // Make sure levelAtMonthStart is set
+        monthlyTaskProgress.levelsGainedThisMonthCount = level - monthlyTaskProgress.levelAtMonthStart;
+    } else { // This case should ideally not happen if levelAtMonthStart is correctly initialized
+        monthlyTaskProgress.levelsGainedThisMonthCount = 0;
+    }
+    updateActiveMonthlyTasksProgress();
+}
+
             xpNeeded = calculateXpNeededForLevel(level); // Recalculate for next level
         }
 
         if (leveledUp) {
-            renderSpecialties(); // Re-render to show newly unlocked ones
+            renderSpecialties(specialtySearchInputEl ? specialtySearchInputEl.value : ''); // Re-render to show newly unlocked ones
         }
         // No need to call updateStatsUI here, it's handled by gainXP or other callers
         return leveledUp;
@@ -3253,6 +3192,7 @@ const achievementDescriptions = {
         checkbox.disabled = true;
 
         const actualXPGained = gainXP(xpGainedBase);
+showXpToast(actualXPGained, 'Disease Studied'); // Show XP toast
         playSound('diseaseCheck');
         const daysToReview = Math.max(1, Math.round(intervalDurationMs / MS_PER_DAY));
         addQuest(`Studied: ${disease} (${specialty}) (+${actualXPGained} XP). Review in ${daysToReview} day(s).`);
@@ -3260,6 +3200,11 @@ const achievementDescriptions = {
         updateTaskProgress(TASK_TYPES.DISEASES, 1);
         checkDiseaseAchievements();
         checkSpecialtyMastery(specialty, true);
+// Monthly Task Update for studying topics
+if (getYearMonthString() === lastMonthlyTasksGeneratedDate) {
+    monthlyTaskProgress.topicsStudiedThisMonthCount++;
+    updateActiveMonthlyTasksProgress(); // This will check if any monthly task is completed
+}
         updateAndSave();
     }
 
@@ -3284,7 +3229,46 @@ const achievementDescriptions = {
         const allStudied = specData.diseases.every(diseaseName => studied[specialty]?.[diseaseName]);
 
         if (allStudied) {
-            const specialtyAchievementsMap = { "General Surgery": "Surgical Samurai", "Cardiology": "Cardiac Conqueror", "Neurology": "Neurology Ninja", "Dermatology": "Dermatology Dynamo", "Hematology/Oncology": "Heme/Onc Hero", "Infectious Diseases": "Infectious Intellect", "Orthopedics": "Ortho Overlord", "Obstetrics & Gynecology": "OB/GYN Oracle", "Psychiatry": "Psychiatry Prodigy", "Ophthalmology": "Eye Expert", "Otolaryngology (ENT)": "ENT Expert", "Urology": "Urology Virtuoso", "Endocrinology": "Endocrine Expert", "Gastroenterology": "GI Guru", "Pulmonology": "Lung Legend", "Rheumatology": "Rheum Ruler", "Nephrology": "Nephron Master", "Allergy & Immunology": "Allergy Alleviator", "Emergency Medicine": "ER Enthusiast", "Geriatrics": "Geriatric Genius", "Physical Medicine & Rehabilitation (PM&R)": "Rehab Rockstar", "Genetics": "Gene Genius", "Palliative Care": "Palliative Pro", "Family Medicine": "Family Physician", "Anesthesiology": "Anesthesia Ace", "Pathology": "Pathology Pioneer", "Radiology": "Radiology Rockstar", "Preventive Medicine": "Preventive Pro" };
+            const specialtyAchievementsMap = { "Anatomy": "Anatomy Expert",
+    "Physiology": "Physiology Pro",
+    "Biochemistry": "Biochem Buff",
+    "Microbiology": "Micro Mastermind",
+    "Pharmacology": "Pharm Fanatic", // Assuming Pharmacology exists in your `specialties` object. If not, remove.
+    "Pathology": "Pathology Pioneer",
+    "Emergency Medicine": "ER Enthusiast",
+    "General Surgery": "Surgical Samurai",
+    "Obstetrics & Gynecology": "OB/GYN Oracle",
+    "Psychiatry": "Psychiatry Prodigy",
+    "Dermatology": "Dermatology Dynamo",
+    "Radiology": "Radiology Rockstar",
+    "Cardiology": "Cardiology Conqueror",
+    "Pulmonology": "Pulmonology Pro", // Corrected from "Lung Legend"
+    "Gastroenterology": "GI Guru",
+    "Nephrology": "Nephron Master", // Corrected from "Nephron Master" to itself (was already okay)
+    "Endocrinology": "Endocrine Expert",
+    "Neurology": "Neurology Ninja",
+    "Anesthesiology": "Anesthesia Ace",
+    "Genetics": "Genetics Genius", // Corrected from "Gene Genius"
+    "Infectious Diseases": "Infectious Intellect",
+    "Rheumatology": "Rheum Ruler",
+    "Hematology/Oncology": "Heme/Onc Hero",
+    "Orthopedics": "Ortho Overlord",
+    "Urology": "Urology Virtuoso",
+    "Ophthalmology": "Ophthalmology Oracle", // Corrected from "Eye Expert"
+    "Otolaryngology (ENT)": "ENT Expert",
+    "Physical Medicine & Rehabilitation (PM&R)": "PM&R Pro", // Corrected from "Rehab Rockstar"
+    "Preventive Medicine": "Prev Med Pro", // Corrected from "Preventive Pro"
+    "Allergy & Immunology": "Allergy Alleviator",
+    "Geriatrics": "Geriatric Guru", // Corrected from "Geriatric Genius"
+    "Palliative Care": "Palliative Pro",
+    "Medical Ethics": "Ethics Expert",
+    "Critical Care Medicine": "Critical Care Commander",
+    "Global Health": "Global Health Guru",
+    "Medical Education": "Medical Educator",
+    "Internal Medicine (Advanced)": "Advanced IM Master",
+    "Cardiology (Advanced)": "Advanced Cardio Master",
+    "Hematology/Oncology (Advanced)": "Advanced Heme/Onc Master",
+    "Neurology (Advanced)": "Advanced Neuro Master" };
             const achievementName = specialtyAchievementsMap[specialty];
 
             if (achievementName && checkAchievement(achievementName)) {
@@ -3294,9 +3278,17 @@ const achievementDescriptions = {
 
             if (justMasteredCheck) {
                  recalculateMasteredSpecialtyCount();
-                 if (masteredSpecialtyCount >= 3) checkAchievement("Polymath");
-                 if (masteredSpecialtyCount >= 5) checkAchievement("Grandmaster");
-                 if (masteredSpecialtyCount >= 10) checkAchievement("Medical Omniscient");
+                 if (masteredSpecialtyCount >= 50) checkAchievement("Specialty Divine");
+if (masteredSpecialtyCount >= 45) checkAchievement("Specialty Legend");
+if (masteredSpecialtyCount >= 40) checkAchievement("Specialty Sovereign");
+if (masteredSpecialtyCount >= 35) checkAchievement("Specialty Polymath");
+if (masteredSpecialtyCount >= 30) checkAchievement("Specialty Omniscient");
+if (masteredSpecialtyCount >= 25) checkAchievement("Specialty Grandmaster");
+if (masteredSpecialtyCount >= 20) checkAchievement("Specialty Master");
+if (masteredSpecialtyCount >= 15) checkAchievement("Specialty Connoisseur");
+if (masteredSpecialtyCount >= 10) checkAchievement("Specialty Aficionado");
+if (masteredSpecialtyCount >= 5) checkAchievement("Specialty Collector");
+if (masteredSpecialtyCount >= 3) checkAchievement("Specialty Explorer");
                  checkAllSpecialtiesMastered();
                  renderSpecialties(); // Re-render to show mastery star
              }
@@ -3343,7 +3335,30 @@ const achievementDescriptions = {
          if (totalQuestions >= 50) checkAchievement("Quiz Knight");
      }
     function checkLevelAchievements() {
-         const levelMilestones = { 100: "Divine Insight", 90: "Timeless Scholar", 75: "Mythical Medic", 60: "Supreme Healer", 50: "Legendary Scholar", 40: "Chief of Medicine", 30: "Epic Healer", 25: "World-Class Diagnostician", 20: "Grand Healer", 15: "Attending Physician", 12: "Senior Resident", 8: "Resident of Remedies", 7: "Adept Healer", 5: "Master of XP", 4: "Medical Intern", 3: "Apprentice Healer", 2: "Clinical Apprentice" };
+         const levelMilestones =  {
+    500: "Omni-Level Master",
+    300: "Ascended Healer",
+    250: "Celestial Clinician",
+    200: "Dimensional Doctor",
+    150: "Master of the Universe",
+    100: "Cosmic Physician",
+    90: "Transcendent Healer",
+    75: "Divine Insight",
+    60: "Timeless Scholar",
+    50: "Mythical Medic",
+    45: "Supreme Healer", // Add this if you want a trigger
+    40: "Legendary Scholar",
+    35: "Chief of Medicine",
+    30: "Epic Healer",
+    25: "World-Class Diagnostician",
+    20: "Grand Healer",
+    15: "Attending Physician",
+    12: "Senior Resident",
+    8: "Resident of Remedies",
+    5: "Adept Healer",
+    3: "Medical Intern",
+    2: "Clinical Apprentice"
+};;
          // Check milestones in descending order for efficiency (optional)
          for (const milestoneLevel in levelMilestones) {
             if (level >= parseInt(milestoneLevel)) {
@@ -3358,12 +3373,17 @@ const achievementDescriptions = {
                   count += Object.keys(studied[spec]).length;
              }
          }
-         if (count >= 100) checkAchievement("Cure Connoisseur");
-         if (count >= 50) checkAchievement("Apprentice Healer"); // Title shared with level 3? Keep both triggers.
-         if (count >= 25) checkAchievement("Dedicated Healer");
-         if (count >= 10) checkAchievement("Persistent Scholar");
-         if (count >= 1) checkAchievement("Novice Diagnostician");
-         if (count >= 1) checkAchievement("First Blood");
+         if (count >= 1500) checkAchievement("Lore Master");
+    if (count >= 1250) checkAchievement("Scholarly Sage");
+    if (count >= 1000) checkAchievement("Knowledge Architect");
+    if (count >= 750) checkAchievement("Compendium Compiler");
+    if (count >= 500) checkAchievement("Syllabus Surveyor");
+    if (count >= 250) checkAchievement("Topic Collector");
+    if (count >= 100) checkAchievement("Dedicated Healer");
+    if (count >= 50) checkAchievement("Domain Discoverer");
+    if (count >= 25) checkAchievement("Persistent Scholar");
+    if (count >= 5) checkAchievement("Novice Diagnostician"); // Corrected threshold
+    if (count >= 1) checkAchievement("First Blood");
          // Ultimate Healer checked elsewhere
      }
     function checkStreakAchievements() {
@@ -3383,26 +3403,59 @@ const achievementDescriptions = {
         if (totalReviewsCompleted >= 1) checkAchievement("Review Rookie");
      }
      function checkSkillAchievements() {
-         if (totalSkillLevelsPurchased >= 50) checkAchievement("Skill Sovereign");
-         if (totalSkillLevelsPurchased >= 20) checkAchievement("True Potential");
-         if (totalSkillLevelsPurchased >= 1) checkAchievement("Skill Dabbler");
+         if (totalSkillLevelsPurchased >= 250) checkAchievement("Skill Sage");
+    if (totalSkillLevelsPurchased >= 200) checkAchievement("Skill Omniscient");
+    if (totalSkillLevelsPurchased >= 150) checkAchievement("Skill Grandmaster");
+    if (totalSkillLevelsPurchased >= 100) checkAchievement("Ultimate Skill Mastery");
+    if (totalSkillLevelsPurchased >= 50) checkAchievement("Master of Many Skills");
+    if (totalSkillLevelsPurchased >= 25) checkAchievement("Skill Collector");
+    if (totalSkillLevelsPurchased >= 10) checkAchievement("Total Skill Enthusiast");
 
-         if (skills.reviewMastery >= 1) checkAchievement("Review Adept");
-         if (skills.acceleratedRecall >= 1) checkAchievement("Recall Expert");
-         if (skills.studyBurst >= 1) checkAchievement("Burst Believer");
-         if (skills.efficientLearner >= 1) checkAchievement("Efficient Expert");
+         // Check for upgrading specific skills at least once
+    if (skills.xpBoost >= 1) { /* No specific achievement for "just upgrading once" for XP Boost in your list */ }
+    if (skills.reviewMastery >= 1) checkAchievement("Review Adept");
+    if (skills.acceleratedRecall >= 1) checkAchievement("Recall Expert");
+    if (skills.studyBurst >= 1) checkAchievement("Burst Believer"); // Already called when skill used
+    if (skills.efficientLearner >= 1) checkAchievement("Efficient Expert");
 
-         if (Object.values(skills).some(level => level >= 5)) checkAchievement("Skill Master");
+    // Check for reaching Level 5 in any single skill
+    if (Object.values(skills).some(level => level >= 5)) checkAchievement("Skill Master");
 
-         let isAnySkillMaxed = false;
-         // Ensure buttons exist before checking dataset
-         if (buyXpBoostBtnEl && skills.xpBoost >= parseInt(buyXpBoostBtnEl.dataset.maxLevel)) isAnySkillMaxed = true;
-         if (buyReviewMasteryBtnEl && skills.reviewMastery >= parseInt(buyReviewMasteryBtnEl.dataset.maxLevel)) isAnySkillMaxed = true;
-         if (buyAcceleratedRecallBtnEl && skills.acceleratedRecall >= parseInt(buyAcceleratedRecallBtnEl.dataset.maxLevel)) isAnySkillMaxed = true;
-         if (buyStudyBurstBtnEl && skills.studyBurst >= parseInt(buyStudyBurstBtnEl.dataset.maxLevel)) isAnySkillMaxed = true;
-         if (buyEfficientLearnerBtnEl && skills.efficientLearner >= parseInt(buyEfficientLearnerBtnEl.dataset.maxLevel)) isAnySkillMaxed = true;
-         if (isAnySkillMaxed) checkAchievement("Peak Performance");
-     }
+    // Check for reaching Max Level (10) in any single skill
+    // This was "Peak Performance", which is correct.
+    let isAnySkillMaxedToTen = false;
+    const skillButtons = [buyXpBoostBtnEl, buyReviewMasteryBtnEl, buyAcceleratedRecallBtnEl, buyStudyBurstBtnEl, buyEfficientLearnerBtnEl];
+    for (const skillName in skills) {
+        const buttonEl = skillButtons.find(btn => btn && btn.dataset.skill === skillName);
+        if (buttonEl && skills[skillName] >= parseInt(buttonEl.dataset.maxLevel)) { // Assuming maxLevel is 10 for this achievement
+            if (parseInt(buttonEl.dataset.maxLevel) === 10) { // Or check specific condition for "Peak Performance"
+                 isAnySkillMaxedToTen = true; //This was "Peak Performance"
+                 checkAchievement("Peak Performance");
+                 break;
+            }
+        }
+    }
+     // Check if any skill is maxed (using its own maxLevel from dataset)
+    if (skills.xpBoost >= parseInt(buyXpBoostBtnEl?.dataset?.maxLevel || '99')) checkAchievement("XP Boost Master");
+    if (skills.reviewMastery >= parseInt(buyReviewMasteryBtnEl?.dataset?.maxLevel || '99')) checkAchievement("Review Mastery Master");
+    if (skills.acceleratedRecall >= parseInt(buyAcceleratedRecallBtnEl?.dataset?.maxLevel || '99')) checkAchievement("Accelerated Recall Master");
+    if (skills.studyBurst >= parseInt(buyStudyBurstBtnEl?.dataset?.maxLevel || '99')) checkAchievement("Study Burst Master");
+    if (skills.efficientLearner >= parseInt(buyEfficientLearnerBtnEl?.dataset?.maxLevel || '99')) checkAchievement("Efficient Learner Master");
+
+
+    // Check for maxing out ALL skills
+    let allSkillsAreMaxed = true;
+    for (const skillName in skills) {
+        const buttonEl = skillButtons.find(btn => btn && btn.dataset.skill === skillName);
+        if (!buttonEl || skills[skillName] < parseInt(buttonEl.dataset.maxLevel)) {
+            allSkillsAreMaxed = false;
+            break;
+        }
+    }
+    if (allSkillsAreMaxed && Object.keys(skills).length > 0) checkAchievement("All Skills Maxed");
+
+    // Remove checks for "Skill Sovereign", "True Potential", "Skill Dabbler"
+}
 
      function updateAchievementsListUI() {
          if (!achievementListEl) return;
@@ -3431,7 +3484,7 @@ const achievementDescriptions = {
     // ========================================
     // ===== Render Specialties Function =====
     // ========================================
-    function renderSpecialties() {
+    function renderSpecialties(searchTerm = '') {
          if (!specialtiesContainerEl) {
              console.error("Specialties container element (#specialties) not found!");
              return;
@@ -3499,8 +3552,16 @@ const achievementDescriptions = {
              if (!isLocked) {
                  const diseaseList = document.createElement('div');
                  diseaseList.className = "diseaseList";
-                 specData.diseases.forEach(diseaseName => {
-                     const wrapper = document.createElement('div');
+
+        // ADD THIS LINE BELOW:
+        const lowerSearchTerm = searchTerm.trim().toLowerCase(); 
+
+        specData.diseases.forEach(diseaseName => {
+                     // ADD THE TWO LINES BELOW:
+                const lowerDiseaseName = diseaseName.toLowerCase();
+                if (!lowerSearchTerm || lowerDiseaseName.includes(lowerSearchTerm)) {
+
+                    const wrapper = document.createElement('div');
                      wrapper.className = "disease";
                      wrapper.addEventListener('click', (event) => { event.stopPropagation(); }); // Keep stopPropagation
 
@@ -3544,6 +3605,7 @@ const achievementDescriptions = {
                          input.onchange = () => toggleDisease(specName, diseaseName, input);
                      }
                      diseaseList.appendChild(wrapper);
+            }
                  });
                  specDiv.appendChild(diseaseList);
              }
@@ -3599,6 +3661,42 @@ const achievementDescriptions = {
              introTextEl.style.opacity = 1;
          }, 300); // Match transition duration if set in CSS
      }
+function showXpToast(xpAmount, sourceText = '') {
+    const container = document.getElementById('toast-container');
+    if (!container || xpAmount <= 0) {
+        return; // Don't show if container missing or no XP gained
+    }
+
+    const toast = document.createElement('div');
+    toast.className = 'toast toast-xp toast-info'; // Basic classes + type
+
+    let message = `+${xpAmount} XP`;
+    if (sourceText) {
+        message += ` (${sourceText})`;
+    }
+    toast.textContent = message;
+
+    container.appendChild(toast);
+
+    // Force reflow to enable transition
+    void toast.offsetWidth; 
+
+    // Add 'show' class to trigger fade-in/slide-in (defined in your CSS)
+    toast.classList.add('show');
+
+    // Set timeout to remove the toast
+    const displayDuration = 2500; // How long the toast stays visible (in milliseconds)
+    const fadeDuration = 500;     // Should match CSS transition duration for opacity/transform
+
+    setTimeout(() => {
+        toast.classList.remove('show'); // Trigger fade-out/slide-out
+        setTimeout(() => {
+            if (toast.parentNode === container) { // Check if it wasn't already removed
+               container.removeChild(toast);
+            }
+        }, fadeDuration); // Remove from DOM after fade out
+    }, displayDuration); 
+}
     function updateReviewChecklist() {
          if (!reviewListEl) return;
          reviewListEl.innerHTML = "";
@@ -3638,7 +3736,7 @@ const achievementDescriptions = {
               if (reviewSection) reviewSection.style.display = 'none'; // Hide section
           }
 
-         renderSpecialties(); // Refresh specialty list to update indicators
+         renderSpecialties(specialtySearchInputEl ? specialtySearchInputEl.value : ''); // Refresh specialty list to update indicators
      }
      function markReviewComplete(specialty, disease) {
          const now = Date.now();
@@ -3659,6 +3757,11 @@ const achievementDescriptions = {
              addQuest(`${disease} (${specialty}) reviewed (+${actualXPGained} XP). Next review in ${actualIntervalDays} day(s).`);
              updateTaskProgress(TASK_TYPES.REVIEWS, 1);
              checkReviewAchievements();
+// Monthly Task Update for completing reviews
+if (getYearMonthString() === lastMonthlyTasksGeneratedDate) {
+    monthlyTaskProgress.reviewsCompletedThisMonthCount++;
+    updateActiveMonthlyTasksProgress();
+}
              updateAndSave();       // Save progress
              updateReviewChecklist(); // Update the review list UI immediately
          } else {
@@ -3893,6 +3996,9 @@ const achievementDescriptions = {
         currentTheme = theme; // Ensure global state matches
     }
     function handleThemeToggle() {
+if (!sfxAudioInitialized && toneJsLoaded) {
+        initializeSfxAudio(); 
+    }
         const newTheme = bodyEl.classList.contains('light-mode') ? 'dark' : 'light';
         applyTheme(newTheme);
         checkAchievement("Theme Thinker");
@@ -3945,11 +4051,237 @@ const achievementDescriptions = {
         updateAchievementsListUI();
         updateQuestLogUI();
         renderDailyTasksUI();
+        renderMonthlyTasksUI(); // Render monthly tasks
         // NOTE: renderSpecialties is called by updateReviewChecklist when needed
         // NOTE: updateReviewChecklist is called by markReviewComplete and init
         saveProgress(); // Save everything after updates
     }
 
+// ===========================================
+// ===== Monthly Task System Functions =====
+// ===========================================
+
+function checkAndGenerateMonthlyTasks() {
+    const currentYearMonth = getYearMonthString();
+    if (lastMonthlyTasksGeneratedDate !== currentYearMonth) {
+        console.log(`MONTHLY_TASK_DEBUG: Generating new monthly tasks for ${currentYearMonth}. Last gen date: ${lastMonthlyTasksGeneratedDate}`);
+        generateNewMonthlyTasks(); // This will also reset counters via resetMonthlyTaskCounters
+        addQuest("🌟 New Monthly Challenges available!");
+        // Save progress will be called by the first action or init
+    } else {
+        console.log(`MONTHLY_TASK_DEBUG: Monthly tasks for ${currentYearMonth} already generated or loaded.`);
+    }
+}
+
+function resetMonthlyTaskCountersAndSetDate() {
+    monthlyTaskProgress.topicsStudiedThisMonthCount = 0;
+    monthlyTaskProgress.reviewsCompletedThisMonthCount = 0;
+    monthlyTaskProgress.questionsAnsweredThisMonthCount = 0;
+    monthlyTaskProgress.levelsGainedThisMonthCount = 0;
+    monthlyTaskProgress.levelAtMonthStart = level; // Capture current level at the start of the month's tasks
+    lastMonthlyTasksGeneratedDate = getYearMonthString();
+    console.log(`MONTHLY_TASK_DEBUG: Monthly progress counters reset. Level at month start: ${level}`);
+}
+
+function generateNewMonthlyTasks() {
+    monthlyTasks = []; // Clear old tasks
+    resetMonthlyTaskCountersAndSetDate(); // Reset progress for the new month
+
+    const availableTaskConfigs = [...MONTHLY_TASK_CONFIG];
+    const numTasksToGenerate = Math.min(NUM_MONTHLY_TASKS_TO_OFFER, availableTaskConfigs.length);
+
+    for (let i = 0; i < numTasksToGenerate; i++) {
+        if (availableTaskConfigs.length === 0) break;
+
+        const configIndex = Math.floor(Math.random() * availableTaskConfigs.length);
+        const config = availableTaskConfigs.splice(configIndex, 1)[0]; // Pick and remove
+
+        // For monthly tasks, let's pick the first target tier for simplicity for now
+        // Or you could randomize: const targetIndex = Math.floor(Math.random() * config.targets.length);
+        const targetIndex = 0; 
+        const target = config.targets[targetIndex];
+        const rewardXP = config.rewardsXP[targetIndex];
+        const rewardSP = config.rewardsSP[targetIndex];
+        const description = config.desc.replace('{target}', target);
+
+        const newTask = {
+            id: `${config.id}-${target}`, // Unique ID including target
+            type: config.type, // Not currently used, but good for future
+            description: description,
+            target: target,
+            progress: 0, // Will be updated from monthlyTaskProgress object
+            rewardXP: rewardXP,
+            rewardSP: rewardSP,
+            completed: false,
+            metric: config.metric 
+        };
+        monthlyTasks.push(newTask);
+    }
+    console.log("MONTHLY_TASK_DEBUG: Generated monthly tasks:", monthlyTasks);
+    updateActiveMonthlyTasksProgress(); // Initialize progress from counters
+}
+
+function updateActiveMonthlyTasksProgress() {
+    let changed = false;
+    monthlyTasks.forEach(task => {
+        if (task.completed) return;
+
+        let currentProgressForTask = 0;
+        if (task.completed) return; // Skip if already completed
+
+let actualMonthlyProgressValue = 0;
+if (task.metric && monthlyTaskProgress[task.metric] !== undefined) {
+    actualMonthlyProgressValue = monthlyTaskProgress[task.metric];
+}
+// Any custom logic for other task types would go here
+
+// Always update the task's progress to reflect the main counter for that metric
+if (task.progress !== actualMonthlyProgressValue) {
+    task.progress = actualMonthlyProgressValue;
+    // If this update alone completes the task, it will be caught below.
+    // We don't mark 'changed = true' yet unless it leads to completion.
+}
+
+if (task.progress >= task.target && !task.completed) { // Now check for completion
+    task.completed = true;
+    claimMonthlyTaskReward(task);
+    changed = true; // A task was completed, so UI and save are needed
+}
+    });
+
+    if (changed) { // Only update UI and save if a task was actually completed
+        renderMonthlyTasksUI();
+        saveProgress();
+    }
+}
+
+function claimMonthlyTaskReward(task) {
+    if (!task) return;
+    let rewardMessage = `🎉 Monthly Challenge Complete: ${task.description}. Reward: `;
+    let xpGained = 0;
+    if (task.rewardXP > 0) {
+        xpGained = gainXP(task.rewardXP); // gainXP handles XP boost
+        rewardMessage += `+${xpGained} XP`;
+    }
+    if (task.rewardSP > 0) {
+        gainSP(task.rewardSP);
+        rewardMessage += `${xpGained > 0 ? ' & ' : ''} +${task.rewardSP} SP`;
+    }
+    addQuest(rewardMessage);
+    showNotification(`🏆 Monthly Challenge: ${task.description}! Reward claimed!`, 5000);
+    playSound('achievement'); // Or a new sound for monthly task completion
+    updateStatsUI(); // Update SP/XP display
+}
+
+function renderMonthlyTasksUI() {
+    // console.log("MONTHLY_DEBUG: renderMonthlyTasksUI - STARTING"); // Keep this commented unless debugging
+    if (!monthlyTaskListEl || !monthlyTasksDateEl) {
+        console.error("MONTHLY_DEBUG: renderMonthlyTasksUI - ERROR: Missing list or date element!"); 
+        return; // Exit if elements are missing
+    }
+
+    // --- Date Display Logic (Corrected Version) ---
+    if (monthlyTasksDateEl) { 
+        if (lastMonthlyTasksGeneratedDate) {
+            // Attempt to create a date object. lastMonthlyTasksGeneratedDate should be "YYYY-MM"
+            const year = parseInt(lastMonthlyTasksGeneratedDate.substring(0, 4));
+            const month = parseInt(lastMonthlyTasksGeneratedDate.substring(5, 7)) - 1; // JavaScript months are 0-11
+
+            if (!isNaN(year) && !isNaN(month)) {
+                const dateForDisplay = new Date(year, month, 1);
+                if (!isNaN(dateForDisplay.getTime())) { // Check if the constructed date is valid
+                    monthlyTasksDateEl.textContent = `( ${dateForDisplay.toLocaleString('default', { month: 'long', year: 'numeric' })} )`;
+                } else {
+                    monthlyTasksDateEl.textContent = "(Date Error B)"; 
+                }
+            } else {
+                monthlyTasksDateEl.textContent = "(Date Error A)"; 
+            }
+        } else {
+            // If no tasks have been generated yet, show current month as placeholder
+            const today = new Date();
+            monthlyTasksDateEl.textContent = `( ${today.toLocaleString('default', { month: 'long', year: 'numeric' })} )`; 
+        }
+    }
+    // --- End Date Display ---
+
+    monthlyTaskListEl.innerHTML = ""; // Clear the list first
+
+    // console.log(`MONTHLY_DEBUG: renderMonthlyTasksUI - monthlyTasks array length: ${monthlyTasks ? monthlyTasks.length : 'null'}`); // Keep commented unless debugging
+
+    if (!monthlyTasks || monthlyTasks.length === 0) {
+        // console.log("MONTHLY_DEBUG: renderMonthlyTasksUI - No monthly tasks to display."); // Keep commented unless debugging
+        monthlyTaskListEl.innerHTML = "<li class='placeholder'>No monthly challenges active. Check back on the 1st of the month!</li>";
+        return;
+    }
+
+    // --- Loop through tasks (With validation and corrected text) ---
+    monthlyTasks.forEach((task, index) => {
+        // console.log(`MONTHLY_DEBUG: renderMonthlyTasksUI - Processing task index ${index}:`, JSON.stringify(task)); // Keep commented unless debugging
+
+        // **Validation Check**
+         if (!task || typeof task.description !== 'string' || typeof task.target !== 'number' || typeof task.progress !== 'number' || typeof task.rewardXP !== 'number' || typeof task.rewardSP !== 'number' || typeof task.completed !== 'boolean') {
+              console.error(`MONTHLY_DEBUG: renderMonthlyTasksUI - ERROR: Task at index ${index} has invalid or missing properties! Skipping. Task data:`, JSON.stringify(task));
+              return; // Skip this task
+         }
+
+        try { 
+            const li = document.createElement('li');
+            li.classList.add(task.completed ? 'task-complete' : 'task-incomplete');
+
+            // Description
+            const descSpan = document.createElement('span');
+            descSpan.className = 'task-desc';
+            descSpan.textContent = task.description;
+            li.appendChild(descSpan);
+
+            // Progress
+            const progressSpan = document.createElement('span');
+            progressSpan.className = 'task-progress';
+
+            // Use validated numbers
+            let currentTaskProgress = task.progress; // Already checked it's a number
+            let currentTaskTarget = task.target;   // Already checked it's a number
+            const displayProgress = Math.min(currentTaskProgress, currentTaskTarget);
+            const targetDisplay = currentTaskTarget; 
+
+            // **Use backticks here!**
+            progressSpan.textContent = `[${displayProgress}/${targetDisplay}]`; 
+            li.appendChild(progressSpan);
+
+            // Reward
+            const rewardSpan = document.createElement('span');
+            rewardSpan.className = 'task-reward';
+            // Use backticks here too for consistency if needed later, but simple concatenation is fine
+            let rewardText = `(${task.rewardXP} XP`; 
+            if (task.rewardSP > 0) {
+                rewardSpan.classList.add('task-reward-sp'); 
+                // Use backticks for the SP part too
+                rewardText += ` + ${task.rewardSP} SP`; 
+            }
+            rewardText += ')';
+            if (task.completed) {
+                rewardText += ' ✔️';
+            }
+            rewardSpan.textContent = rewardText;
+            li.appendChild(rewardSpan);
+
+            // Append the completed list item
+            monthlyTaskListEl.appendChild(li); 
+            // console.log(`MONTHLY_DEBUG: renderMonthlyTasksUI - Successfully created and appended li for task index ${index}`); // Keep commented unless debugging
+
+        } catch (error) {
+            console.error(`MONTHLY_DEBUG: renderMonthlyTasksUI - ERROR creating list item for task index ${index}:`, error); 
+            console.error(`MONTHLY_DEBUG: Faulty task data was:`, JSON.stringify(task)); 
+        }
+    });
+    // console.log("MONTHLY_DEBUG: renderMonthlyTasksUI - FINISHED processing tasks."); // Keep commented unless debugging
+}
+
+
+// ===========================================
+// ===== END Monthly Task System Functions =====
+// ===========================================
 
     // ========================================
     // ===== Daily Task System Functions =====
@@ -4012,8 +4344,14 @@ const achievementDescriptions = {
              li.appendChild(descSpan);
              const progressSpan = document.createElement('span');
              progressSpan.className = 'task-progress';
-             const displayProgress = Math.min(task.progress, task.target);
-             progressSpan.textContent = `[${displayProgress}/${task.target}]`;
+             let currentTaskProgress = typeof task.progress === 'number' ? task.progress : 0;
+let currentTaskTarget = typeof task.target === 'number' ? task.target : 0;
+
+// Ensure progress doesn't exceed target for display, and they are numbers
+const displayProgress = Math.min(Number(currentTaskProgress) || 0, Number(currentTaskTarget) || 0);
+const targetDisplay = Number(currentTaskTarget) || 0; // Ensure target is a number for display
+
+progressSpan.textContent = `[${displayProgress}/${targetDisplay}]`;
              li.appendChild(progressSpan);
              const rewardSpan = document.createElement('span');
              rewardSpan.className = 'task-reward';
@@ -4102,14 +4440,16 @@ const achievementDescriptions = {
          loadProgress();
          // Generate tasks if needed
          checkAndGenerateDailyTasks();
+         checkAndGenerateMonthlyTasks(); // Check and generate monthly tasks
          // Initial UI setup
-         renderSpecialties();
+         renderSpecialties(specialtySearchInputEl ? specialtySearchInputEl.value : '');
          updateProfilePicture();
          updateReviewChecklist();
          updateStatsUI();
          updateAchievementsListUI();
          updateQuestLogUI();
          renderDailyTasksUI();
+         renderMonthlyTasksUI(); // Render monthly tasks
          // Save initial state
          saveProgress();
 
@@ -4118,6 +4458,8 @@ const achievementDescriptions = {
          if (questParent) questParent.classList.remove('expanded');
          if (questListEl) questListEl.style.maxHeight = '0';
          if (questToggleIndicatorEl) questToggleIndicatorEl.textContent = "►";
+
+updateActiveMonthlyTasksProgress(); // Ensure initial progress syncs from loaded counters
 
          console.log("Initialization complete.");
      }
@@ -4147,6 +4489,24 @@ const achievementDescriptions = {
     buyAcceleratedRecallBtnEl?.addEventListener('click', () => handleBuySkill(buyAcceleratedRecallBtnEl));
     buyStudyBurstBtnEl?.addEventListener('click', () => handleBuySkill(buyStudyBurstBtnEl));
     buyEfficientLearnerBtnEl?.addEventListener('click', () => handleBuySkill(buyEfficientLearnerBtnEl));
+
+// --- Modal Close Button Listeners ---
+closeResetModalBtnEl?.addEventListener('click', closeResetModal);
+cancelResetBtnEl?.addEventListener('click', closeResetModal); // Also close on Cancel
+
+closeNotificationModalBtnEl?.addEventListener('click', closeNotificationModal);
+// The OK button already has a listener if needed: okNotificationModalBtnEl?.addEventListener('click', closeNotificationModal);
+
+closeStatsModalBtnEl?.addEventListener('click', closeStatsModal);
+
+closeImportExportModalBtnEl?.addEventListener('click', closeImportExportModal);
+// --- End Modal Close Button Listeners ---
+
+// --- Specialty Search Listener ---
+specialtySearchInputEl?.addEventListener('input', (event) => {
+     // When the user types in the search box, re-render the specialties with the filter
+     renderSpecialties(event.target.value); 
+});
 
     // ========================================
     // ===== Start the application =====
