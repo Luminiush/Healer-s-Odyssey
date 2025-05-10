@@ -21,6 +21,8 @@
     --locked-color: #777;
     --danger-color: var(--error-color);
     --danger-hover-color: #c82333;
+    --primary-color-rgb: 244, 196, 48; /* For monthly task background tint */
+    --success-color-rgb: 76, 175, 80;  /* For completed monthly task tint */
     --placeholder-color: #666;
     --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     --font-header: 'Cinzel', serif; /* Retained Cinzel for headers */
@@ -54,6 +56,8 @@ body.light-mode {
     --locked-color: #aaa;
     --danger-color: var(--error-color);
     --danger-hover-color: #bd2130;
+    --primary-color-rgb: 199, 145, 0;
+    --success-color-rgb: 40, 167, 69;
     --placeholder-color: #aaa;
     --modal-content-bg: #fefefe;
     --focus-outline-color: var(--primary-color);
@@ -1054,4 +1058,99 @@ body.light-mode ::-webkit-scrollbar-thumb {
 }
 body.light-mode ::-webkit-scrollbar-thumb:hover {
       background: #aaa;
+}
+/* ===== Monthly Tasks Section ===== */
+.monthly-tasks #monthlyTaskList {
+    list-style: none;
+    padding: 0;
+    margin: 15px 0 0 0;
+}
+
+.monthly-tasks #monthlyTaskList li {
+    background-color: rgba(var(--primary-color-rgb), 0.08); /* Subtle tint with primary color */
+    padding: 18px 20px; /* More padding */
+    border-radius: 6px;
+    margin-bottom: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    border-left: 5px solid var(--primary-color); /* Prominent border */
+    transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.monthly-tasks #monthlyTaskList li:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+body.light-mode .monthly-tasks #monthlyTaskList li {
+    background-color: rgba(var(--primary-color-rgb), 0.12); /* Slightly more tint in light mode */
+    border-left-color: var(--primary-color);
+}
+
+.monthly-tasks #monthlyTaskList li.task-complete {
+    background-color: rgba(var(--success-color-rgb), 0.12); /* Success tint */
+    border-left-color: var(--success-color);
+    opacity: 0.85;
+}
+
+body.light-mode .monthly-tasks #monthlyTaskList li.task-complete {
+    background-color: rgba(var(--success-color-rgb), 0.15);
+}
+
+/* Use existing task-desc, task-progress, task-reward for consistency, */
+/* but you can make them specific if needed: */
+.monthly-tasks .task-desc {
+    flex-grow: 1;
+    margin-right: 10px;
+    font-weight: 500; /* Slightly bolder for monthly tasks */
+}
+
+.monthly-tasks li.task-complete .task-desc {
+    text-decoration: line-through;
+    color: var(--text-muted-color); /* Defined in your existing styles */
+}
+
+.monthly-tasks .task-progress {
+    font-style: italic;
+    color: var(--text-muted-color); /* Defined in your existing styles */
+    flex-shrink: 0;
+    font-size: 0.95em;
+}
+.monthly-tasks li.task-complete .task-progress {
+    color: var(--success-color); /* Defined in your existing styles */
+}
+
+.monthly-tasks .task-reward {
+    font-weight: bold;
+    color: var(--accent-color); /* Use accent for monthly rewards for distinction */
+    flex-shrink: 0;
+    font-size: 1em; /* Slightly larger rewards text */
+}
+
+.monthly-tasks .task-reward-sp { /* Style for SP reward text in monthly */
+    color: var(--info-color); /* Or another distinct color */
+}
+/* ===== Specialty Search Box ===== */
+#specialtySearchInput {
+    box-sizing: border-box; /* Ensures padding doesn't add to width */
+    max-width: 400px; /* Limit width on larger screens */
+    display: block; /* Make it block level */
+    margin-left: auto; /* Center it */
+    margin-right: auto; /* Center it */
+}
+
+#specialtySearchInput::placeholder { /* Style placeholder text */
+  color: var(--placeholder-color); /* Use existing placeholder color */
+  opacity: 0.8;
+}
+
+/* Add focus style consistency */
+#specialtySearchInput:focus-visible {
+    outline: 2px solid var(--focus-outline-color);
+    outline-offset: 1px;
+    box-shadow: 0 0 0 3px rgba(244, 196, 48, 0.2); /* Using primary color with alpha */
+    border-color: var(--primary-color);
 }
