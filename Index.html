@@ -46,6 +46,7 @@
                  <ul>
                      <li><a href="#actions-section">Actions</a></li>
                      <li><a href="#daily-tasks-section">Daily Tasks</a></li>
+                 <li><a href="#monthly-tasks-section">Monthly Challenges</a></li>
                      <li><a href="#skills-section">Skills</a></li>
                      <li><a href="#specialties-section">Specialties</a></li>
                      <li><a href="#quests-section">Quest Log</a></li>
@@ -79,7 +80,11 @@
                  <h2>Daily Tasks <span id="dailyTasksDate" style="font-size: 0.8em; color: var(--text-muted-color);"></span></h2>
                  <ul id="dailyTaskList"></ul>
             </section>
-
+<section id="monthly-tasks-section" class="content-section monthly-tasks">
+    <h2>Monthly Challenges <span id="monthlyTasksDate" style="font-size: 0.8em; color: var(--text-muted-color);"></span></h2>
+    <ul id="monthlyTaskList">
+        </ul>
+</section>
             <section id="skills-section" class="content-section skills-section">
                 <h2>Skills <small>(Total Levels: <span id="skill-levels-total">0</span>)</small></h2>
                 <p>Available Skill Points: <span id="available-skill-points">0</span></p>
@@ -109,6 +114,11 @@
 
             <section id="specialties-section" class="content-section specialties">
                  <h2>Specialties</h2>
+
+<div class="search-container" style="margin-bottom: 15px;"> 
+          <input type="search" id="specialtySearchInput" placeholder="Search diseases/topics..." style="width: 100%; padding: 8px 10px; border-radius: 4px; border: 1px solid var(--border-color); background-color: var(--bg-color); color: var(--text-color); font-size: 1em;">
+     </div>
+     
                  <div id="specialties-container">
                      <div id="specialties"></div>
                  </div>
@@ -129,6 +139,7 @@
                  <p>Items ready for review will appear here.</p>
                  <ul id="reviewList"></ul>
             </section>
+
 
             <section id="settings-section" class="content-section settings">
                  <h2>Settings</h2>
@@ -181,7 +192,8 @@
              </div>
         </div>
 
-    </div> <audio id="bgmAudio" loop preload="metadata" src="https://incompetech.com/music/royalty-free/mp3-royaltyfree/Lost%20Frontier.mp3" style="display: none;">
+    </div> <div id="toast-container"></div>
+ <audio id="bgmAudio" loop preload="metadata" src="https://incompetech.com/music/royalty-free/mp3-royaltyfree/Lost%20Frontier.mp3" style="display: none;">
         Your browser does not support the audio element.
     </audio>
     <script src="script.js"></script>
