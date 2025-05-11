@@ -1154,3 +1154,87 @@ body.light-mode .monthly-tasks #monthlyTaskList li.task-complete {
     box-shadow: 0 0 0 3px rgba(244, 196, 48, 0.2); /* Using primary color with alpha */
     border-color: var(--primary-color);
 }
+/* ===== Achievement List Enhancements ===== */
+.achievement-log ul {
+    list-style: none;
+    margin-top: 15px;
+    max-height: 400px; /* Increased max-height for more visibility */
+    overflow-y: auto;
+    padding: 15px;
+    background-color: rgba(0,0,0,0.05);
+    border-radius: 4px;
+    border: 1px solid var(--border-color); /* Added a subtle border */
+}
+
+body.light-mode .achievement-log ul {
+    background-color: rgba(0,0,0,0.02);
+    border-color: #ddd;
+}
+
+.achievement-log li.achievement-item { /* Base style for all items */
+    padding: 10px 5px; /* Increased padding */
+    border-bottom: 1px dashed var(--border-color);
+    font-size: 0.95em;
+    display: flex;
+    flex-direction: column; /* Stack name and description */
+    gap: 5px; /* Space between name and description */
+    transition: background-color 0.2s ease; /* For hover effect */
+}
+
+.achievement-log li.achievement-item:hover {
+    background-color: rgba(255, 255, 255, 0.03); /* Subtle hover for dark mode */
+}
+
+body.light-mode .achievement-log li.achievement-item:hover {
+    background-color: rgba(0, 0, 0, 0.03); /* Subtle hover for light mode */
+}
+
+.achievement-log li.achievement-item:last-child {
+    border-bottom: none;
+}
+
+.achievement-name { /* Already exists, but ensure it's suitable */
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Space between icon and text */
+    font-size: 1.05em; /* Slightly larger name */
+}
+
+.achievement-desc { /* Already exists, ensure it's suitable */
+    font-size: 0.9em;
+    opacity: 0.85; /* Slightly more visible description */
+    padding-left: 2em; /* Indent description a bit more if an icon is used before name */
+    color: var(--text-color); /* Ensure it uses theme text color */
+}
+
+/* Styles for UNLOCKED achievements */
+.achievement-log li.achievement-unlocked {
+    opacity: 1; /* Full opacity */
+}
+
+.achievement-log li.achievement-unlocked .achievement-name::before {
+    content: "✔️"; /* Checkmark icon */
+    color: var(--success-color);
+    margin-right: 5px;
+    font-size: 1em;
+}
+
+/* Styles for LOCKED achievements */
+.achievement-log li.achievement-locked {
+    opacity: 0.65; /* Make it look faded */
+}
+
+.achievement-log li.achievement-locked .achievement-name {
+    color: var(--locked-color); /* Use the locked color variable */
+}
+
+.achievement-log li.achievement-locked .achievement-name::before {
+    content: "🔒"; /* Lock icon */
+    margin-right: 5px;
+    font-size: 1em;
+}
+
+.achievement-log li.achievement-locked .achievement-desc {
+    font-style: italic; /* Italicize description for locked achievements */
+}
