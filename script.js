@@ -3312,19 +3312,39 @@ if (masteredSpecialtyCount >= 3) checkAchievement("Specialty Explorer");
      }
 
     function checkAchievement(name) {
-        if (!achievementDescriptions[name]) { console.warn(`Attempted achievement "${name}" with no description.`); return false; }
-        if (!achievements.includes(name)) {
-            achievements.push(name);
-            achievements.sort();
-            playSound('achievement');
-            showNotification(`🏆 Achievement Unlocked: ${name}`, 4000);
-            addQuest(`Achievement Unlocked: ${name}`);
-            updateAchievementsListUI();
-            updateStatsUI(); // Updates achievement count display
-            return true;
-        }
+    if (!achievementDescriptions[name]) {
+        console.warn(`Attempted achievement "${name}" with no description.`);
         return false;
     }
+    if (!achievements.includes(name)) {
+        achievements.push(name);
+        achievements.sort();
+        playSound('achievement'); // You can create a more distinct sound for this later if you like
+
+        // Standard notification
+        showNotification(`🏆 Achievement Unlocked: ${name}`, 4000);
+
+        // ---- START: New Celebration Code ----
+        const celebrationOverlay = document.querySelector('.celebration');
+        const celebrationContent = document.getElementById('celebration-content');
+        if (celebrationOverlay && celebrationContent) {
+            const icon = achievementIcons[name] || "🎉";
+            celebrationContent.innerHTML = `<span class="math-inline">\{icon\}<br\></span>{name}`; // Display icon and name
+            celebrationOverlay.classList.add('show');
+            // Hide celebration after a few seconds
+            setTimeout(() => {
+                celebrationOverlay.classList.remove('show');
+            }, 3000); // Display for 3 seconds
+        }
+        // ---- END: New Celebration Code ----
+
+        addQuest(`Achievement Unlocked: ${name}`);
+        updateAchievementsListUI(); // Update the list to show it as unlocked
+        updateStatsUI(); // Updates achievement count display
+        return true;
+    }
+    return false;
+}
 
     // Functions to check specific achievement conditions
     function checkQuestionAchievements() {
@@ -3458,23 +3478,47 @@ if (masteredSpecialtyCount >= 3) checkAchievement("Specialty Explorer");
 }
 
      function updateAchievementsListUI() {
-         if (!achievementListEl) return;
-         achievementListEl.innerHTML = "";
-         const sortedAchievements = [...achievements].sort();
-         sortedAchievements.forEach(a => {
-             const li = document.createElement('li');
-             const icon = achievementIcons[a] || "🏆";
-             const nameSpan = document.createElement('span');
-             nameSpan.className = 'achievement-name';
-             nameSpan.textContent = `${icon} ${a}`;
-             li.appendChild(nameSpan);
-             const descSpan = document.createElement('span');
-             descSpan.className = 'achievement-desc';
-             descSpan.textContent = achievementDescriptions[a] || "Description missing.";
-             li.appendChild(descSpan);
-             achievementListEl.appendChild(li);
-         });
-     }
+    if (!achievementListEl) return;
+    achievementListEl.innerHTML = ""; // Clear the list first
+
+    // Get all possible achievement names from your achievementDescriptions object
+    const allDefinedAchievementNames = Object.keys(achievementDescriptions);
+
+    // Sort them alphabetically for a consistent order
+    allDefinedAchievementNames.sort().forEach(achName => {
+        const li = document.createElement('li');
+        li.classList.add('achievement-item'); // Add a general class for styling all items
+
+        const icon = achievementIcons[achName] || "🏆"; // Get the icon
+        const description = achievementDescriptions[achName] || "Tap here to learn how to get this achievement!"; // Get the description
+
+        // Check if the current player has earned this achievement
+        // 'achievements' is your array that stores the names of EARNED achievements
+        const isEarned = achievements.includes(achName);
+
+        // Add a specific class based on whether it's earned or locked
+        if (isEarned) {
+            li.classList.add('achievement-unlocked');
+        } else {
+            li.classList.add('achievement-locked');
+        }
+
+        // Create the span for the achievement name
+        const nameSpan = document.createElement('span');
+        nameSpan.className = 'achievement-name';
+        // We will add icons (lock/check) using CSS later
+        nameSpan.textContent = `${icon} ${achName}`;
+        li.appendChild(nameSpan);
+
+        // Create the span for the achievement description
+        const descSpan = document.createElement('span');
+        descSpan.className = 'achievement-desc';
+        descSpan.textContent = description; // This tells the player how to get it!
+        li.appendChild(descSpan);
+
+        achievementListEl.appendChild(li);
+    });
+}
 
 
     // ========================================
