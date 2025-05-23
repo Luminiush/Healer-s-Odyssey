@@ -427,7 +427,8 @@ const specialties = {
             "Pediatric Orthopedics (Fractures, Deformities)", // Overlap with Ortho
             "Pediatric Psychiatry (ADHD, Autism, Mood Disorders)", // Overlap with Psych
             "Genetic Syndromes (Specific Pediatric Examples)", // Overlap with Genetics
-            "Inborn Errors of Metabolism (Pediatric Overview)" // Overlap with Genetics/Biochem
+            "Inborn Errors of Metabolism (Pediatric Overview)", // Overlap with Genetics/Biochem
+            "Necrotizing enterocolitis (NEC)"
         ],
         "requiredLevel": 1,
         "icon": "👶"
@@ -704,7 +705,29 @@ const specialties = {
             "Skin Grafting & Flaps (Basic Principles)", // Overlap with Plastic Surgery
             "Management of Surgical Bleeding",
             "Fluid & Electrolyte Management in Surgical Patients",
-            "Nutritional Support in Surgical Patients"
+            "Nutritional Support in Surgical Patients",
+"Skin and Subcutaneous Tissue",
+        "Head and Neck",
+        "Thyroids and Parathyroids",
+        "Breast",
+        "Esophagus",
+        "Stomach",
+        "Small Intestines",
+        "Colorectal",
+        "Liver",
+        "Gallbladder and Biliary Tree",
+        "Pancreas",
+        "Retroperitoneum, Omentum and Mesentery",
+        "Plastic, Burns and Reconstructive Surgery",
+        "TCVS",
+        "Urology",
+        "Orthopedic Surgery",
+        "Anesthesia",
+        "Neurosurgery",
+        "Pediatric Surgery",
+        "Hernia",
+        "Appendix",
+        "Spleen"
         ],
         "requiredLevel": 3,
         "icon": "⚔️"
