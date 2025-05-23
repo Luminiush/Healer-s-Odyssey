@@ -19,7 +19,7 @@
 
         <aside class="sidebar">
             <div class="profile">
-                 <img id="pfp" src="https://imgur.com/nDIwDRI.png" alt="Character Avatar" onerror="this.src='https://placehold.co/110x110/2a2a2a/f4c430?text=Healer'; this.onerror=null;">
+                 <img id="pfp" src="https://imgur.com/KaLxLtB.png" alt="Character Avatar" onerror="this.src='https://placehold.co/110x110/2a2a2a/f4c430?text=Healer'; this.onerror=null;">
                  <p id="pfp-title" class="profile-title">Level 1 Healer</p>
                  <button id="showStatsBtn" title="Show Detailed Stats">📊 Show Stats</button>
                  <div class="sidebar-controls">
@@ -33,9 +33,9 @@
                  <p>🧬 XP: <span id="xp">0</span> / <span id="xpNeeded">110</span></p>
                  <div id="xpBarContainer"><div id="xpBar">0%</div></div>
                  <p>🧪 Level: <span id="level">1</span></p>
-                 <p>✨ SP: <span id="skill-points">0</span> (<span id="available-skill-points">0</span> Avail)</p>
+                 <p>✨ SP: <span id="skill-points">0</span>
                  <p>🏆 Achieved: <span id="achievements">0</span></p>
-                 <p title="Login daily to increase your streak!">🔥 Daily Streak: <span id="daily-streak">0</span> (Max: <span id="longest-streak">0</span>)</p>
+                 <p>🔥 Daily Streak: <span id="daily-streak">0</span> (Max: <span id="longest-streak">0</span>)</p>
                  <p>📊 Questions Done: <span id="questions-total">0</span></p>
                  <p>🧐 Reviews Done: <span id="reviews-total">0</span></p>
                  <p>💡 Total Skill Levels: <span id="skill-levels-total">0</span></p>
@@ -86,19 +86,18 @@
         </ul>
 </section>
             <section id="skills-section" class="content-section skills-section">
-                <h2>Skills <small>(Total Levels: <span id="skill-levels-total">0</span>)</small></h2>
-                <p>Available Skill Points: <span id="available-skill-points">0</span></p>
+                <h2>Skills</h2>
                 <div class="skill-tree">
                      <div class="skill-item">
-                         <span class="skill-desc">XP Boost: +<span class="skill-level" id="xp-boost-level">0</span>% XP gain. (Max Lvl 10)</span>
+                         <span class="skill-desc">XP Boost: +<span class="skill-level" id="xp-boost-level">0</span> XP gain. (Max Lvl 10)</span>
                          <button id="buy-xp-boost-btn" data-skill="xpBoost" data-base-cost="1" data-max-level="10"> Upgrade <span class="skill-cost">(Cost: 1 SP)</span> </button>
                      </div>
                      <div class="skill-item">
-                         <span class="skill-desc">Review Mastery: +<span class="skill-level" id="review-mastery-level">0</span> XP per review. (Max Lvl 10)</span>
+                         <span class="skill-desc">Review Mastery: <span class="skill-level" id="review-mastery-level">0</span> XP per review. (Max Lvl 10)</span>
                          <button id="buy-review-mastery-btn" data-skill="reviewMastery" data-base-cost="1" data-max-level="10"> Upgrade <span class="skill-cost">(Cost: 1 SP)</span> </button>
                      </div>
                      <div class="skill-item">
-                         <span class="skill-desc">Accelerated Recall: <span class="skill-level" id="accelerated-recall-level">0</span>% faster review intervals. (Max Lvl 10)</span>
+                         <span class="skill-desc">Accelerated Recall: <span class="skill-level" id="accelerated-recall-level">0</span> faster review intervals. (Max Lvl 10)</span>
                          <button id="buy-accelerated-recall-btn" data-skill="acceleratedRecall" data-base-cost="2" data-max-level="10"> Upgrade <span class="skill-cost">(Cost: 2 SP)</span> </button>
                      </div>
                      <div class="skill-item">
@@ -106,7 +105,7 @@
                          <button id="buy-study-burst-btn" data-skill="studyBurst" data-base-cost="2" data-max-level="10"> Upgrade <span class="skill-cost">(Cost: 2 SP)</span> </button>
                      </div>
                      <div class="skill-item">
-                         <span class="skill-desc">Efficient Learner: <span class="skill-level" id="efficient-learner-level">0</span>% chance for bonus XP & faster first review when learning. (Max Lvl 5)</span>
+                         <span class="skill-desc">Efficient Learner: <span class="skill-level" id="efficient-learner-level">0</span> chance for bonus XP & faster first review when learning. (Max Lvl 5)</span>
                          <button id="buy-efficient-learner-btn" data-skill="efficientLearner" data-base-cost="3" data-max-level="5"> Upgrade <span class="skill-cost">(Cost: 3 SP)</span> </button>
                      </div>
                  </div>
