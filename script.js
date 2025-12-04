@@ -732,6 +732,82 @@ const specialties = {
         "requiredLevel": 3,
         "icon": "⚔️"
     },
+ "Pharmacology": {
+        diseases: [ // Conceptually, these are pharmacology topics
+            "Introduction to Pharmacology (Pharmacokinetics & Pharmacodynamics)",
+            "Drug Receptors & Signal Transduction",
+            "Drug Absorption, Distribution, Metabolism, Excretion (ADME)",
+            "Bioavailability & First-Pass Metabolism",
+            "Drug Half-Life & Steady State",
+            "Loading Dose & Maintenance Dose",
+            "Therapeutic Index & Therapeutic Window",
+            "Drug Interactions (Synergism, Antagonism, CYP450 System)",
+            "Adverse Drug Reactions & Toxicology Basics",
+            "Pharmacogenomics (Basic Concepts)",
+            "Autonomic Pharmacology (Cholinergic & Adrenergic Systems Overview)",
+            "Cholinergic Agonists (Direct & Indirect)",
+            "Cholinergic Antagonists (Muscarinic & Nicotinic Blockers)",
+            "Adrenergic Agonists (Alpha & Beta Receptor Agonists)",
+            "Adrenergic Antagonists (Alpha & Beta Blockers)",
+            "Drugs Affecting the Cardiovascular System (Overview)",
+            "Antihypertensives (Diuretics, ACE Inhibitors, ARBs, CCBs, Beta Blockers)",
+            "Antiarrhythmic Drugs (Class I, II, III, IV)",
+            "Drugs for Heart Failure (Diuretics, ACEi/ARBs, Beta Blockers, Digoxin)",
+            "Antianginal Drugs (Nitrates, Beta Blockers, CCBs)",
+            "Anticoagulants (Heparin, Warfarin, DOACs)",
+            "Antiplatelet Drugs (Aspirin, Clopidogrel)",
+            "Thrombolytic Drugs",
+            "Lipid-Lowering Drugs (Statins, Fibrates, Ezetimibe, PCSK9 Inhibitors)",
+            "Drugs Affecting the Respiratory System (Overview)",
+            "Bronchodilators (Beta-agonists, Anticholinergics, Theophylline)",
+            "Anti-inflammatory Respiratory Drugs (Corticosteroids, Leukotriene Modifiers)",
+            "Antitussives & Expectorants",
+            "Drugs Affecting the Gastrointestinal System (Overview)",
+            "Antacids & Acid Reducers (H2 Blockers, PPIs)",
+            "Antiemetics (Serotonin Antagonists, Dopamine Antagonists, Antihistamines)",
+            "Laxatives & Antidiarrheal Agents",
+            "Drugs for Inflammatory Bowel Disease (Aminosalicylates, Corticosteroids, Immunomodulators)",
+            "Drugs Affecting the Endocrine System (Overview)",
+            "Insulin & Oral Hypoglycemic Agents (Metformin, Sulfonylureas, GLP-1 Agonists, SGLT2 Inhibitors)",
+            "Thyroid Hormones & Antithyroid Drugs",
+            "Corticosteroids (Systemic - Pharmacology & Side Effects)",
+            "Hormone Replacement Therapy (Estrogen, Progesterone, Testosterone)",
+            "Contraceptives (Oral, Injectable, Implants)",
+            "Drugs for Osteoporosis (Bisphosphonates, SERMs, Denosumab)",
+            "Drugs Affecting the Nervous System (Overview)",
+            "Sedative-Hypnotics (Benzodiazepines, Z-drugs)",
+            "Antiepileptic Drugs (Mechanisms & Major Classes)",
+            "Drugs for Parkinson's Disease (Levodopa, Dopamine Agonists, MAO-B Inhibitors)",
+            "Antipsychotics (Typical & Atypical - Mechanisms & Side Effects)",
+            "Antidepressants (SSRIs, SNRIs, TCAs, MAOIs)",
+            "Mood Stabilizers (Lithium, Valproate, Lamotrigine)",
+            "Anxiolytics (Benzodiazepines, Buspirone)",
+            "Stimulants for ADHD (Methylphenidate, Amphetamines)",
+            "Opioid Analgesics (Morphine, Codeine, Fentanyl - Mechanisms, Side Effects, Tolerance, Dependence)",
+            "Non-Opioid Analgesics (NSAIDs, Acetaminophen)",
+            "Local Anesthetics (Mechanism of Action)",
+            "General Anesthetics (Inhalational & Intravenous)",
+            "Antimicrobial Agents (Overview - Antibacterials, Antivirals, Antifungals, Antiparasitics)",
+            "Cell Wall Synthesis Inhibitors (Penicillins, Cephalosporins, Carbapenems, Vancomycin)",
+            "Protein Synthesis Inhibitors (Macrolides, Tetracyclines, Aminoglycosides, Clindamycin, Linezolid)",
+            "Nucleic Acid Synthesis Inhibitors (Fluoroquinolones, Rifampin, Metronidazole)",
+            "Antimetabolites (Sulfonamides, Trimethoprim)",
+            "Antiviral Drugs (Agents for Herpes, Influenza, HIV, Hepatitis)",
+            "Antifungal Drugs (Azoles, Polyenes, Echinocandins)",
+            "Antiparasitic Drugs (Agents for Malaria, Helminths, Protozoa)",
+            "Antitubercular Drugs (Isoniazid, Rifampin, Pyrazinamide, Ethambutol)",
+            "Cancer Chemotherapy (Overview - Alkylating Agents, Antimetabolites, Antitumor Antibiotics, Plant Alkaloids, Targeted Therapies)",
+            "Immunosuppressants (Calcineurin Inhibitors, mTOR Inhibitors, Biologics)",
+            "Immunostimulants (Interferons, Interleukins)",
+            "Drugs Used in Anemia (Iron, Vitamin B12, Folic Acid, Erythropoietin)",
+            "Drugs for Gout (NSAIDs, Colchicine, Allopurinol, Probenecid)",
+            "Vitamins & Minerals (Pharmacologic Uses & Toxicity)",
+            "Herbal Medicines & Supplements (Common Interactions)",
+            "Drug Development & Clinical Trials (Phases)"
+        ],
+        "requiredLevel": 4, // Positioned after core sciences but before many clinical specialties
+        "icon": "💊"
+    },
     "Obstetrics & Gynecology": {
         diseases: [
             "Normal Pregnancy (Physiology & Milestones)",
@@ -793,7 +869,7 @@ const specialties = {
             "Family Planning Counseling",
             "Intimate Partner Violence Screening"
         ],
-        "requiredLevel": 3,
+        "requiredLevel": 4,
         "icon": "🤰"
     },
     "Psychiatry": {
@@ -997,7 +1073,43 @@ const specialties = {
             "Genitourinary Radiology (Advanced GU Imaging)", // Overlap with Urology/Nephro
             "Breast Imaging (Advanced Mammography, Ultrasound, MRI)", // Overlap with Gen Surg/Onc
             "Emergency Radiology (Trauma Imaging Protocols)", // Overlap with ER
-            "Cross-Sectional Anatomy (CT & MRI)"
+            "Cross-Sectional Anatomy (CT & MRI)", "CT Physics & Image Formation (Advanced)",
+            "MRI Physics & Image Formation (Advanced Sequences)",
+            "Ultrasound Physics & Image Formation (Advanced Doppler)",
+            "Nuclear Medicine Physics & Radiopharmaceuticals (Advanced)",
+            "Radiation Biology & Effects",
+            "Contrast Media (Advanced Considerations)",
+            "Chest X-Ray Interpretation (Pathological Patterns - Consolidation, Interstitial, Nodule, Mass, Cavity)", // Expanded
+            "Abdominal X-Ray Interpretation (Detailed Bowel Gas Patterns, Calcifications, Masses)", // Expanded
+            "Skeletal Radiography (Trauma, Arthritis, Tumors, Metabolic Bone Disease)", // Expanded
+            "CT Head Interpretation (Detailed Stroke Imaging, Tumors, Infection, Hydrocephalus)", // Expanded
+            "CT Chest Interpretation (Detailed PE, Aortic Pathology, Mediastinal Masses, ILD Patterns)", // Expanded
+            "CT Abdomen/Pelvis Interpretation (Detailed Organ Pathology, Cancer Staging, Inflammatory Conditions)", // Expanded
+            "MRI Brain Interpretation (Detailed Tumors, Infection, MS Lesions, Dementia Patterns)", // Expanded
+            "MRI Spine Interpretation (Detailed Disc Pathology, Spinal Stenosis, Tumors, Infection)", // Expanded
+            "MRI Musculoskeletal Interpretation (Ligament/Tendon Tears, Cartilage Injury, Bone Tumors)", // Expanded
+            "Ultrasound Abdomen (Detailed Organ Evaluation, Ascites, Abscesses)", // Expanded
+            "Ultrasound Pelvis (Detailed Gynecologic & Obstetric Pathology)", // Expanded
+            "Ultrasound Vascular (Detailed DVT Evaluation, Carotid Stenosis, Aneurysms)", // Expanded
+            "Doppler Ultrasound (Advanced Applications)",
+            "Mammography Interpretation (Detailed Calcifications, Masses, Architectural Distortion)", // Expanded
+            "Breast Ultrasound & MRI (Indications & Interpretation)", // Overlap with Gen Surg/Onc
+            "Fluoroscopy (Advanced GI Studies, Swallowing Studies, Joint Injections)", // Expanded
+            "Angiography (Coronary, Peripheral, Cerebral - Detailed Interpretation)", // Expanded
+            "Interventional Radiology (Detailed Procedures - Embolization, Stenting, Ablation, TIPS, IVC Filter)", // Expanded
+            "PET Scan (Advanced Oncology, Neurology, Cardiology Applications)", // Expanded
+            "Bone Scan (Advanced Interpretation)", // Expanded
+            "V/Q Scan (Advanced Interpretation)", // Expanded
+            "Pediatric Radiology (Specific Conditions & Imaging Modalities)", // Expanded
+            "Neuroradiology (Advanced Techniques & Pathology)", // Expanded
+            "Cardiothoracic Radiology (Advanced Cardiac & Pulmonary Imaging)", // Expanded
+            "Abdominal Radiology (Advanced GI/GU Pathology)", // Expanded
+            "Musculoskeletal Radiology (Advanced Trauma, Arthritis, Tumors)", // Expanded
+            "Genitourinary Radiology (Advanced Renal, Bladder, Prostate Imaging)", // Expanded
+            "Emergency Radiology (Advanced Trauma & Acute Condition Imaging)", // Expanded
+            "Cross-Sectional Anatomy (Advanced CT & MRI)", // Expanded
+            "Artificial Intelligence (AI) in Radiology (Basic Concepts)",
+            "Teleradiology"
         ],
         "requiredLevel": 5,
         "icon": "🩻"
@@ -1030,7 +1142,41 @@ const specialties = {
             "Neoplasia (Grading & Staging)", // Expanded
             "Tumor Markers (Pathology Perspective)",
             "Frozen Section Interpretation",
-            "Laboratory Medicine (Clinical Chemistry, Hematology, Microbiology, Blood Bank Basics)"
+            "Laboratory Medicine (Clinical Chemistry, Hematology, Microbiology, Blood Bank Basics)",    "Autopsy Pathology (Detailed Findings)", // Expanded
+            "Gross Pathology (Advanced Specimen Description)", // Expanded
+            "Histopathology (Advanced Staining Techniques)", // Expanded
+            "Immunohistochemistry (Advanced Applications)", // Expanded
+            "Molecular Pathology (Advanced Techniques & Interpretation)", // Expanded
+            "Cytogenetics (Karyotyping, FISH)", // Overlap with Genetics
+            "Flow Cytometry (Principles & Applications)",
+            "Cardiovascular Pathology (Congenital Heart Defects, Cardiomyopathies, Valvular Prostheses)", // Expanded
+            "Pulmonary Pathology (ILD Patterns, Pulmonary Hypertension Pathology, Lung Transplant Pathology)", // Expanded
+            "Gastrointestinal Pathology (Pre-malignant Lesions, IBD Pathology, Liver Transplant Pathology)", // Expanded
+            "Hepatic Pathology (Specific Viral Hepatitis Findings, NAFLD Spectrum, Liver Tumors)", // Expanded
+            "Renal Pathology (Specific Glomerular Disease Patterns, Renal Transplant Pathology)", // Expanded
+            "Endocrine Pathology (Pituitary Adenomas, Adrenal Hyperplasia/Tumors)", // Expanded
+            "Hematopathology (Detailed Leukemia, Lymphoma, Myeloma Subtypes & Diagnostics)", // Expanded
+            "Coagulation Disorders (Laboratory Testing)", // Overlap with Heme/Onc
+            "Neuropathology (Neurodegenerative Diseases, CNS Infections, Pediatric Neuropathology)", // Expanded
+            "Skin Pathology (Specific Inflammatory Dermatoses, Complex Tumors)", // Expanded
+            "Bone & Soft Tissue Pathology (Specific Tumor Types)", // Expanded
+            "Infectious Disease Pathology (Histologic Patterns of Response)", // Expanded
+            "Immunopathology (Autoimmune Disease Pathology in Specific Organs)", // Expanded
+            "Cytopathology (Advanced Cytology - FNA, Effusions)", // Expanded
+            "Forensic Pathology (Specific Injury Patterns, Toxicology Interpretation)", // Expanded
+            "Gynecologic Pathology (Endometrial, Ovarian, Cervical Cancer Pathology)", // Expanded
+            "Urologic Pathology (Prostate, Bladder, Renal Cancer Pathology)", // Expanded
+            "Pediatric Pathology (Specific Childhood Diseases & Tumors)", // Expanded
+            "Transplant Pathology (Detailed Rejection Grading)", // Expanded
+            "Neoplasia (Molecular Basis of Cancer, Tumor Microenvironment)", // Expanded
+            "Tumor Markers (Pathology & Lab Aspects)", // Expanded
+            "Frozen Section Interpretation (Advanced)", // Expanded
+            "Laboratory Management & Quality Control",
+            "Blood Banking & Transfusion Medicine (Laboratory Aspects)", // Overlap with Heme/Onc
+            "Clinical Chemistry (Advanced Interpretation of Labs)", // Overlap with IM/Nephro/Endo
+            "Clinical Microbiology (Laboratory Identification Methods)", // Overlap with Micro/ID
+            "Clinical Hematology (Advanced CBC Interpretation, Coagulation Studies)", // Overlap with Heme/Onc
+            "Point-of-Care Testing"
         ],
         "requiredLevel": 5,
         "icon": "🔬"
@@ -1076,7 +1222,7 @@ const specialties = {
             "Mechanical Circulatory Support (IABP, VADs)", // Overlap with Advanced IM/Critical Care
             "Cardiac Rehabilitation" // Overlap with PM&R
         ],
-        "requiredLevel": 6,
+        "requiredLevel": 8,
         "icon": "❤️"
     },
     "Pulmonology": {
@@ -1115,7 +1261,7 @@ const specialties = {
             "Non-Invasive Ventilation (BiPAP, CPAP)",
             "Pulmonary Rehabilitation" // Overlap with PM&R
         ],
-        "requiredLevel": 7,
+        "requiredLevel": 9,
         "icon": "🫁"
     },
     "Gastroenterology": {
@@ -1175,7 +1321,7 @@ const specialties = {
             "Paracentesis (Procedure)", // Overlap with IR
             "Enteral & Parenteral Nutrition (GI Aspect)" // Overlap with Critical Care
         ],
-        "requiredLevel": 8,
+        "requiredLevel": 10,
         "icon": "🍎"
     },
     "Nephrology": {
@@ -1217,7 +1363,7 @@ const specialties = {
             "Drug Dosing in Renal Impairment",
             "Fluid Management in Renal Disease"
         ],
-        "requiredLevel": 9,
+        "requiredLevel": 11,
         "icon": "🧪"
     },
     "Endocrinology": {
@@ -1273,7 +1419,7 @@ const specialties = {
             "Disorders of Sexual Development (DSD)", // Overlap with Peds/Genetics
             "Adrenal Androgen Excess (Hirsutism, Virilization)"
         ],
-        "requiredLevel": 10,
+        "requiredLevel": 12,
         "icon": "🧬"
     },
     "Neurology": {
@@ -1330,7 +1476,7 @@ const specialties = {
             "Stroke Thrombectomy (Indications & Procedure)", // Overlap with ER/Radiology/Advanced Neuro
             "Intracranial Pressure Monitoring & Management" // Overlap with Neurosurgery/Critical Care
         ],
-        "requiredLevel": 11,
+        "requiredLevel": 13,
         "icon": "🧠"
     },
     "Anesthesiology": {
@@ -1368,92 +1514,8 @@ const specialties = {
             "Anesthesia for Obstetric Patients", // Overlap with OB/GYN
             "Anesthesia for Patients with Coexisting Diseases (Cardiac, Pulmonary, Renal, Hepatic)"
         ],
-        "requiredLevel": 12,
-        "icon": "💉"
-    },
-    "Radiology": {
-        diseases: [ // More specific interpretations + expanded
-            "CT Physics & Image Formation (Advanced)",
-            "MRI Physics & Image Formation (Advanced Sequences)",
-            "Ultrasound Physics & Image Formation (Advanced Doppler)",
-            "Nuclear Medicine Physics & Radiopharmaceuticals (Advanced)",
-            "Radiation Biology & Effects",
-            "Contrast Media (Advanced Considerations)",
-            "Chest X-Ray Interpretation (Pathological Patterns - Consolidation, Interstitial, Nodule, Mass, Cavity)", // Expanded
-            "Abdominal X-Ray Interpretation (Detailed Bowel Gas Patterns, Calcifications, Masses)", // Expanded
-            "Skeletal Radiography (Trauma, Arthritis, Tumors, Metabolic Bone Disease)", // Expanded
-            "CT Head Interpretation (Detailed Stroke Imaging, Tumors, Infection, Hydrocephalus)", // Expanded
-            "CT Chest Interpretation (Detailed PE, Aortic Pathology, Mediastinal Masses, ILD Patterns)", // Expanded
-            "CT Abdomen/Pelvis Interpretation (Detailed Organ Pathology, Cancer Staging, Inflammatory Conditions)", // Expanded
-            "MRI Brain Interpretation (Detailed Tumors, Infection, MS Lesions, Dementia Patterns)", // Expanded
-            "MRI Spine Interpretation (Detailed Disc Pathology, Spinal Stenosis, Tumors, Infection)", // Expanded
-            "MRI Musculoskeletal Interpretation (Ligament/Tendon Tears, Cartilage Injury, Bone Tumors)", // Expanded
-            "Ultrasound Abdomen (Detailed Organ Evaluation, Ascites, Abscesses)", // Expanded
-            "Ultrasound Pelvis (Detailed Gynecologic & Obstetric Pathology)", // Expanded
-            "Ultrasound Vascular (Detailed DVT Evaluation, Carotid Stenosis, Aneurysms)", // Expanded
-            "Doppler Ultrasound (Advanced Applications)",
-            "Mammography Interpretation (Detailed Calcifications, Masses, Architectural Distortion)", // Expanded
-            "Breast Ultrasound & MRI (Indications & Interpretation)", // Overlap with Gen Surg/Onc
-            "Fluoroscopy (Advanced GI Studies, Swallowing Studies, Joint Injections)", // Expanded
-            "Angiography (Coronary, Peripheral, Cerebral - Detailed Interpretation)", // Expanded
-            "Interventional Radiology (Detailed Procedures - Embolization, Stenting, Ablation, TIPS, IVC Filter)", // Expanded
-            "PET Scan (Advanced Oncology, Neurology, Cardiology Applications)", // Expanded
-            "Bone Scan (Advanced Interpretation)", // Expanded
-            "V/Q Scan (Advanced Interpretation)", // Expanded
-            "Pediatric Radiology (Specific Conditions & Imaging Modalities)", // Expanded
-            "Neuroradiology (Advanced Techniques & Pathology)", // Expanded
-            "Cardiothoracic Radiology (Advanced Cardiac & Pulmonary Imaging)", // Expanded
-            "Abdominal Radiology (Advanced GI/GU Pathology)", // Expanded
-            "Musculoskeletal Radiology (Advanced Trauma, Arthritis, Tumors)", // Expanded
-            "Genitourinary Radiology (Advanced Renal, Bladder, Prostate Imaging)", // Expanded
-            "Emergency Radiology (Advanced Trauma & Acute Condition Imaging)", // Expanded
-            "Cross-Sectional Anatomy (Advanced CT & MRI)", // Expanded
-            "Artificial Intelligence (AI) in Radiology (Basic Concepts)",
-            "Teleradiology"
-        ],
-        "requiredLevel": 13,
-        "icon": "🩻"
-    },
-     "Pathology": {
-        diseases: [ // Systemic Pathology + expanded
-            "Autopsy Pathology (Detailed Findings)", // Expanded
-            "Gross Pathology (Advanced Specimen Description)", // Expanded
-            "Histopathology (Advanced Staining Techniques)", // Expanded
-            "Immunohistochemistry (Advanced Applications)", // Expanded
-            "Molecular Pathology (Advanced Techniques & Interpretation)", // Expanded
-            "Cytogenetics (Karyotyping, FISH)", // Overlap with Genetics
-            "Flow Cytometry (Principles & Applications)",
-            "Cardiovascular Pathology (Congenital Heart Defects, Cardiomyopathies, Valvular Prostheses)", // Expanded
-            "Pulmonary Pathology (ILD Patterns, Pulmonary Hypertension Pathology, Lung Transplant Pathology)", // Expanded
-            "Gastrointestinal Pathology (Pre-malignant Lesions, IBD Pathology, Liver Transplant Pathology)", // Expanded
-            "Hepatic Pathology (Specific Viral Hepatitis Findings, NAFLD Spectrum, Liver Tumors)", // Expanded
-            "Renal Pathology (Specific Glomerular Disease Patterns, Renal Transplant Pathology)", // Expanded
-            "Endocrine Pathology (Pituitary Adenomas, Adrenal Hyperplasia/Tumors)", // Expanded
-            "Hematopathology (Detailed Leukemia, Lymphoma, Myeloma Subtypes & Diagnostics)", // Expanded
-            "Coagulation Disorders (Laboratory Testing)", // Overlap with Heme/Onc
-            "Neuropathology (Neurodegenerative Diseases, CNS Infections, Pediatric Neuropathology)", // Expanded
-            "Skin Pathology (Specific Inflammatory Dermatoses, Complex Tumors)", // Expanded
-            "Bone & Soft Tissue Pathology (Specific Tumor Types)", // Expanded
-            "Infectious Disease Pathology (Histologic Patterns of Response)", // Expanded
-            "Immunopathology (Autoimmune Disease Pathology in Specific Organs)", // Expanded
-            "Cytopathology (Advanced Cytology - FNA, Effusions)", // Expanded
-            "Forensic Pathology (Specific Injury Patterns, Toxicology Interpretation)", // Expanded
-            "Gynecologic Pathology (Endometrial, Ovarian, Cervical Cancer Pathology)", // Expanded
-            "Urologic Pathology (Prostate, Bladder, Renal Cancer Pathology)", // Expanded
-            "Pediatric Pathology (Specific Childhood Diseases & Tumors)", // Expanded
-            "Transplant Pathology (Detailed Rejection Grading)", // Expanded
-            "Neoplasia (Molecular Basis of Cancer, Tumor Microenvironment)", // Expanded
-            "Tumor Markers (Pathology & Lab Aspects)", // Expanded
-            "Frozen Section Interpretation (Advanced)", // Expanded
-            "Laboratory Management & Quality Control",
-            "Blood Banking & Transfusion Medicine (Laboratory Aspects)", // Overlap with Heme/Onc
-            "Clinical Chemistry (Advanced Interpretation of Labs)", // Overlap with IM/Nephro/Endo
-            "Clinical Microbiology (Laboratory Identification Methods)", // Overlap with Micro/ID
-            "Clinical Hematology (Advanced CBC Interpretation, Coagulation Studies)", // Overlap with Heme/Onc
-            "Point-of-Care Testing"
-        ],
         "requiredLevel": 14,
-        "icon": "🔬"
+        "icon": "💉"
     },
      "Genetics": {
         diseases: [
@@ -1934,7 +1996,7 @@ const specialties = {
             "Rehabilitation Psychology"
         ],
         "requiredLevel": 30,
-        "icon": "🏃‍♀️" // Using same icon as Physio, maybe find a wheelchair? ♿
+        "icon": "♿"
     },
 
     // --- Level 31-40: Specialized Contexts & Advanced Topics ---
@@ -2026,7 +2088,7 @@ const specialties = {
             "Pulmonary Function Tests in Allergic Disease", // Overlap with Pulm
             "Immunologic Evaluation (Flow Cytometry, Lymphocyte Proliferation, Cytokine Assays)" // Overlap with Pathology/Lab Med
         ],
-        "requiredLevel": 5,
+        "requiredLevel": 6,
         "icon": "🤧"
     },
     "Geriatrics": {
@@ -2213,7 +2275,7 @@ const specialties = {
              "Cardiac Rehabilitation (Advanced Programs)" // Overlap with PM&R
          ],
         "requiredLevel": 44,
-        "icon": "❤️"
+        "icon": "💖"
     },
     "Hematology/Oncology (Advanced)": {
          diseases: [
@@ -2247,7 +2309,7 @@ const specialties = {
              "Fertility Preservation in Cancer Patients"
          ],
         "requiredLevel": 46,
-        "icon": "🎗️"
+        "icon": "🩸"
     },
     "Neurology (Advanced)": {
          diseases: [
@@ -3347,20 +3409,6 @@ if (masteredSpecialtyCount >= 3) checkAchievement("Specialty Explorer");
         // Standard notification
         showNotification(`🏆 Achievement Unlocked: ${name}`, 4000);
 
-        // ---- START: New Celebration Code ----
-        const celebrationOverlay = document.querySelector('.celebration');
-        const celebrationContent = document.getElementById('celebration-content');
-        if (celebrationOverlay && celebrationContent) {
-            const icon = achievementIcons[name] || "🎉";
-            celebrationContent.innerHTML = `<span class="math-inline">\{icon\}<br\></span>{name}`; // Display icon and name
-            celebrationOverlay.classList.add('show');
-            // Hide celebration after a few seconds
-            setTimeout(() => {
-                celebrationOverlay.classList.remove('show');
-            }, 3000); // Display for 3 seconds
-        }
-        // ---- END: New Celebration Code ----
-
         addQuest(`Achievement Unlocked: ${name}`);
         updateAchievementsListUI(); // Update the list to show it as unlocked
         updateStatsUI(); // Updates achievement count display
@@ -3820,6 +3868,9 @@ function showXpToast(xpAmount, sourceText = '') {
              const reviewXPBase = XP_PER_REVIEW_BASE + getCurrentReviewXpBonus();
              const actualXPGained = gainXP(reviewXPBase);
              totalReviewsCompleted++;
+
+playSound('taskComplete'); // Or 'diseaseCheck' if you prefer that sound
+        showXpToast(actualXPGained, "Review Complete"); 
 
              addQuest(`${disease} (${specialty}) reviewed (+${actualXPGained} XP). Next review in ${actualIntervalDays} day(s).`);
              updateTaskProgress(TASK_TYPES.REVIEWS, 1);
